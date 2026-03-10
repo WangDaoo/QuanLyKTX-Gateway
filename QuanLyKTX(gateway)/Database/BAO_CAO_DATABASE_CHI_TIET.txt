@@ -1,0 +1,1358 @@
+================================================================================
+                    BAO CAO CHI TIET DATABASE - HE THONG KTX
+================================================================================
+
+Ngay tao: 2025-02-XX
+Database: QuanLyKyTucXa
+Server: SQL Server (WINDOWS-PC\SQLEXPRESS)
+
+================================================================================
+1. TONG QUAN DATABASE
+================================================================================
+
+- Tong so bang: 20
+- Tong so stored procedures: 139
+- Tong so indexes: (xem chi tiet ben duoi)
+- Soft delete: Tat ca cac bang deu co cot IsDeleted (BIT DEFAULT 0)
+- Audit fields: NgayTao, NguoiTao, NgayCapNhat, NguoiCapNhat
+
+================================================================================
+2. DANH SACH CAC BANG VA CAU TRUC
+================================================================================
+
+2.1. BANG TOANHA (Toa Nha)
+---------------------------
+Ten bang: ToaNha
+Mo ta: Quan ly thong tin cac toa nha trong ky tuc xa
+
+Cac cot:
+- MaToaNha (INT, IDENTITY, PRIMARY KEY)
+- TenToaNha (NVARCHAR(200), NOT NULL)
+- DiaChi (NVARCHAR(500))
+- SoTang (INT)
+- MoTa (NVARCHAR(1000))
+- TrangThai (BIT, DEFAULT 1)
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys: Khong co
+
+Stored Procedures:
+- sp_ToaNha_GetAll
+- sp_ToaNha_GetById
+- sp_ToaNha_Create
+- sp_ToaNha_Update
+- sp_ToaNha_Delete
+- sp_ToaNha_Insert
+
+Backend Controller: BuildingsController.cs
+
+
+2.2. BANG PHONG (Phong)
+------------------------
+Ten bang: Phong
+Mo ta: Quan ly thong tin cac phong trong toa nha
+
+Cac cot:
+- MaPhong (INT, IDENTITY, PRIMARY KEY)
+- MaToaNha (INT, NOT NULL, FK -> ToaNha.MaToaNha)
+- SoPhong (NVARCHAR(20), NOT NULL)
+- SoGiuong (INT, NOT NULL)
+- LoaiPhong (NVARCHAR(50), NOT NULL)
+- GiaPhong (DECIMAL(18,2), NOT NULL)
+- MoTa (NVARCHAR(500))
+- TrangThai (NVARCHAR(50), DEFAULT 'Trong')
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaToaNha -> ToaNha(MaToaNha)
+
+Stored Procedures:
+- sp_Phong_GetAll (tra ve them TenToaNha tu JOIN)
+- sp_Phong_GetById (tra ve them TenToaNha tu JOIN)
+- sp_Phong_Create
+- sp_Phong_Update
+- sp_Phong_Delete
+- sp_Phong_GetAvailable
+- sp_Phong_GetCurrentBySinhVien
+- sp_Phong_GetEmpty
+- sp_Phong_Insert
+
+Backend Controller: RoomsController.cs
+Luu y: Stored procedures tra ve them enriched data (TenToaNha) va controller MAP field nay vao model Phong (co property TenToaNha).
+
+
+2.3. BANG GIUONG (Giuong)
+--------------------------
+Ten bang: Giuong
+Mo ta: Quan ly thong tin cac giuong trong phong
+
+Cac cot:
+- MaGiuong (INT, IDENTITY, PRIMARY KEY)
+- MaPhong (INT, NOT NULL, FK -> Phong.MaPhong)
+- SoGiuong (NVARCHAR(10), NOT NULL)
+- TrangThai (NVARCHAR(50), DEFAULT 'Trong')
+- MoTa (NVARCHAR(500))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaPhong -> Phong(MaPhong)
+
+Stored Procedures:
+- sp_Giuong_GetAll
+- sp_Giuong_GetById
+- sp_Giuong_Create
+- sp_Giuong_Update
+- sp_Giuong_Delete
+- sp_Giuong_Insert
+
+Backend Controller: BedsController.cs
+
+
+2.4. BANG SINHVIEN (Sinh Vien)
+-------------------------------
+Ten bang: SinhVien
+Mo ta: Quan ly thong tin sinh vien
+
+Cac cot:
+- MaSinhVien (INT, IDENTITY, PRIMARY KEY)
+- HoTen (NVARCHAR(200), NOT NULL)
+- MSSV (NVARCHAR(20), NOT NULL, UNIQUE)
+- Lop (NVARCHAR(50), NOT NULL)
+- Khoa (NVARCHAR(100), NOT NULL)
+- NgaySinh (DATETIME)
+- GioiTinh (NVARCHAR(10))
+- SDT (NVARCHAR(15))
+- Email (NVARCHAR(100))
+- DiaChi (NVARCHAR(500))
+- AnhDaiDien (NVARCHAR(500))
+- TrangThai (BIT, DEFAULT 1)
+- MaPhong (INT, FK -> Phong.MaPhong, NULLABLE)
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaPhong -> Phong(MaPhong)
+
+Stored Procedures:
+- sp_SinhVien_GetAll (tra ve them SoPhong, TenToaNha tu JOIN)
+- sp_SinhVien_GetById (tra ve them SoPhong, TenToaNha tu JOIN)
+- sp_SinhVien_Create (tu dong tao TaiKhoan voi TenDangNhap = MSSV, MatKhau = MSSV)
+- sp_SinhVien_Update
+- sp_SinhVien_Delete
+- sp_SinhVien_GetByTaiKhoan (tra ve them SoPhong, TenToaNha tu JOIN)
+- sp_SinhVien_GetByPhong (tra ve them SoPhong, TenToaNha tu JOIN)
+- sp_SinhVien_UpdateProfile
+- sp_SinhVien_Insert
+
+Backend Controller: StudentsController.cs
+Luu y: Stored procedures tra ve them enriched data (SoPhong, TenToaNha) va controller MAP cac field nay vao model SinhVien (co properties SoPhong, TenToaNha).
+
+
+2.5. BANG TAIKHOAN (Tai Khoan)
+--------------------------------
+Ten bang: TaiKhoan
+Mo ta: Quan ly tai khoan dang nhap (Admin, Officer, Student)
+
+Cac cot:
+- MaTaiKhoan (INT, IDENTITY, PRIMARY KEY)
+- TenDangNhap (NVARCHAR(50), NOT NULL, UNIQUE)
+- MatKhau (NVARCHAR(255), NOT NULL) - BCrypt hash
+- HoTen (NVARCHAR(200), NOT NULL)
+- Email (NVARCHAR(100))
+- VaiTro (NVARCHAR(20), DEFAULT 'User') - Admin/Officer/Student
+- TrangThai (BIT, DEFAULT 1)
+- MaSinhVien (INT, FK -> SinhVien.MaSinhVien, NULLABLE)
+- SoLanDangNhapSai (INT, DEFAULT 0)
+- NgayKhoa (DATETIME)
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaSinhVien -> SinhVien(MaSinhVien)
+
+Stored Procedures:
+- sp_TaiKhoan_GetAll (tra ve them TenSinhVien, MSSV tu JOIN, va SoLanDangNhapSai, NgayKhoa)
+- sp_TaiKhoan_GetById (tra ve them TenSinhVien, MSSV tu JOIN, va SoLanDangNhapSai, NgayKhoa)
+- sp_TaiKhoan_Create
+- sp_TaiKhoan_Update
+- sp_TaiKhoan_Delete
+- sp_TaiKhoan_ChangePassword
+- sp_TaiKhoan_GetByTenDangNhap
+- sp_TaiKhoan_Insert
+
+Backend Controller: AuthController.cs
+Luu y: 
+- sp_TaiKhoan_GetAll tra ve them TenSinhVien, MSSV, SoLanDangNhapSai, NgayKhoa. Controller GetAllUsers() chi map TenSinhVien, MSSV, khong map SoLanDangNhapSai, NgayKhoa.
+- sp_TaiKhoan_GetById tra ve them TenSinhVien, MSSV, SoLanDangNhapSai, NgayKhoa. Controller GetUserById() map tat ca cac field nay.
+
+
+2.6. BANG MUCPHI (Muc Phi)
+---------------------------
+Ten bang: MucPhi
+Mo ta: Quan ly cac muc phi (phi phong, phi dich vu, etc.)
+
+Cac cot:
+- MaMucPhi (INT, IDENTITY, PRIMARY KEY)
+- TenMucPhi (NVARCHAR(200), NOT NULL)
+- LoaiPhi (NVARCHAR(100), NOT NULL)
+- GiaTien (DECIMAL(18,2), NOT NULL)
+- DonVi (NVARCHAR(50))
+- TrangThai (BIT, DEFAULT 1)
+- GhiChu (NVARCHAR(500))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys: Khong co
+
+Stored Procedures:
+- sp_MucPhi_GetAll
+- sp_MucPhi_GetById
+- sp_MucPhi_Create
+- sp_MucPhi_Update
+- sp_MucPhi_Delete
+- sp_MucPhi_GetByLoaiPhi
+- sp_MucPhi_GetByType
+- sp_MucPhi_Insert
+
+Backend Controller: FeesController.cs
+
+
+2.7. BANG CAUHINHPHI (Cau Hinh Phi)
+------------------------------------
+Ten bang: CauHinhPhi
+Mo ta: Cau hinh muc toi thieu cho dien/nuoc
+
+Cac cot:
+- MaCauHinh (INT, IDENTITY, PRIMARY KEY)
+- Loai (NVARCHAR(50), NOT NULL) - Dien/Nuoc
+- MucToiThieu (DECIMAL(18,2), NOT NULL)
+- TrangThai (BIT, DEFAULT 1)
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys: Khong co
+
+Stored Procedures:
+- sp_CauHinhPhi_GetAll
+- sp_CauHinhPhi_GetById
+- sp_CauHinhPhi_GetByLoai
+- sp_CauHinhPhi_Create
+- sp_CauHinhPhi_Update
+- sp_CauHinhPhi_Delete
+- sp_CauHinhPhi_Insert
+
+Backend Controller: CauHinhPhiController.cs
+
+
+2.8. BANG BACGIA (Bac Gia)
+----------------------------
+Ten bang: BacGia
+Mo ta: Quan ly bac gia dien/nuoc theo bac thang
+
+Cac cot:
+- MaBac (INT, IDENTITY, PRIMARY KEY)
+- Loai (NVARCHAR(50), NOT NULL) - Dien/Nuoc
+- ThuTu (INT, NOT NULL)
+- TuSo (INT)
+- DenSo (INT)
+- DonGia (DECIMAL(18,2), NOT NULL)
+- TrangThai (BIT, DEFAULT 1)
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys: Khong co
+
+Stored Procedures:
+- sp_BacGia_GetAll
+- sp_BacGia_GetById
+- sp_BacGia_Create
+- sp_BacGia_Update
+- sp_BacGia_Delete
+- sp_BacGia_GetByLoaiPhi
+- sp_BacGia_Insert
+
+Backend Controller: PriceTiersController.cs
+
+
+2.9. BANG HOPDONG (Hop Dong)
+------------------------------
+Ten bang: HopDong
+Mo ta: Quan ly hop dong thue phong cua sinh vien
+
+Cac cot:
+- MaHopDong (INT, IDENTITY, PRIMARY KEY)
+- MaSinhVien (INT, NOT NULL, FK -> SinhVien.MaSinhVien)
+- MaGiuong (INT, NOT NULL, FK -> Giuong.MaGiuong)
+- NgayBatDau (DATE, NOT NULL)
+- NgayKetThuc (DATE, NOT NULL)
+- GiaPhong (DECIMAL(18,2), NOT NULL)
+- TrangThai (NVARCHAR(50), DEFAULT 'Cho duyet')
+- GhiChu (NVARCHAR(1000))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaSinhVien -> SinhVien(MaSinhVien)
+- MaGiuong -> Giuong(MaGiuong)
+
+Stored Procedures:
+- sp_HopDong_GetAll (tra ve them TenSinhVien, MSSV, SoGiuong, SoPhong, TenToaNha tu JOIN)
+- sp_HopDong_GetById (tra ve them TenSinhVien, MSSV, SoGiuong, SoPhong, TenToaNha tu JOIN)
+- sp_HopDong_Create
+- sp_HopDong_Update
+- sp_HopDong_Delete
+- sp_HopDong_GetBySinhVien
+- sp_HopDong_Insert
+
+Backend Controller: ContractsController.cs
+Luu y: Stored procedures tra ve them enriched data (TenSinhVien, MSSV, SoGiuong, SoPhong, TenToaNha) nhung controller khong map cac field nay. Model HopDong khong co cac field nay.
+
+
+2.10. BANG HOADON (Hoa Don)
+-----------------------------
+Ten bang: HoaDon
+Mo ta: Quan ly hoa don thanh toan hang thang
+
+Cac cot:
+- MaHoaDon (INT, IDENTITY, PRIMARY KEY)
+- MaSinhVien (INT, FK -> SinhVien.MaSinhVien, NULLABLE)
+- MaPhong (INT, FK -> Phong.MaPhong, NULLABLE)
+- MaHopDong (INT, FK -> HopDong.MaHopDong, NULLABLE)
+- Thang (INT, NOT NULL)
+- Nam (INT, NOT NULL)
+- TongTien (DECIMAL(18,2), NOT NULL)
+- TrangThai (NVARCHAR(50), DEFAULT 'Chua thanh toan')
+- HanThanhToan (DATE)
+- NgayThanhToan (DATE)
+- GhiChu (NVARCHAR(1000))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaSinhVien -> SinhVien(MaSinhVien)
+- MaPhong -> Phong(MaPhong)
+- MaHopDong -> HopDong(MaHopDong)
+
+Stored Procedures:
+- sp_HoaDon_GetAll (tra ve them TenSinhVien, MSSV, SoPhong, TenToaNha tu JOIN)
+- sp_HoaDon_GetById (tra ve them TenSinhVien, MSSV, SoPhong, TenToaNha tu JOIN)
+- sp_HoaDon_Create
+- sp_HoaDon_Update
+- sp_HoaDon_Delete
+- sp_HoaDon_GetBySinhVien (tra ve them TenSinhVien, MSSV, SoPhong, TenToaNha tu JOIN)
+- sp_HoaDon_GenerateMonthly
+- sp_HoaDon_Insert
+
+Backend Controller: BillsController.cs
+Luu y: Stored procedures tra ve them enriched data (TenSinhVien, MSSV, SoPhong, TenToaNha) nhung controller khong map cac field nay. Model HoaDon khong co cac field nay.
+
+
+2.11. BANG CHITIETHOADON (Chi Tiet Hoa Don)
+---------------------------------------------
+Ten bang: ChiTietHoaDon
+Mo ta: Chi tiet cac khoan chi trong hoa don
+
+Cac cot:
+- MaChiTiet (INT, IDENTITY, PRIMARY KEY)
+- MaHoaDon (INT, NOT NULL, FK -> HoaDon.MaHoaDon)
+- LoaiChiPhi (NVARCHAR(100), NOT NULL)
+- SoLuong (INT, NOT NULL)
+- DonGia (DECIMAL(18,2), NOT NULL)
+- ThanhTien (DECIMAL(18,2), NOT NULL)
+- GhiChu (NVARCHAR(500))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaHoaDon -> HoaDon(MaHoaDon)
+
+Stored Procedures:
+- sp_ChiTietHoaDon_GetAll
+- sp_ChiTietHoaDon_GetById
+- sp_ChiTietHoaDon_Create
+- sp_ChiTietHoaDon_Update
+- sp_ChiTietHoaDon_Delete
+- sp_ChiTietHoaDon_GetByHoaDon
+
+Backend Controller: BillsController.cs (nested trong HoaDon)
+
+
+2.12. BANG BIENLAITHU (Bien Lai Thu)
+--------------------------------------
+Ten bang: BienLaiThu
+Mo ta: Quan ly bien lai thu tien thanh toan hoa don
+
+Cac cot:
+- MaBienLai (INT, IDENTITY, PRIMARY KEY)
+- MaHoaDon (INT, NOT NULL, FK -> HoaDon.MaHoaDon)
+- SoTienThu (DECIMAL(18,2), NOT NULL)
+- NgayThu (DATE, NOT NULL)
+- PhuongThucThanhToan (NVARCHAR(100), NOT NULL)
+- NguoiThu (NVARCHAR(100))
+- GhiChu (NVARCHAR(1000))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaHoaDon -> HoaDon(MaHoaDon)
+
+Stored Procedures:
+- sp_BienLaiThu_GetAll (tra ve them MaSinhVien, TenSinhVien, MSSV, SoPhong, TenToaNha tu JOIN)
+- sp_BienLaiThu_GetById (tra ve them MaSinhVien, TenSinhVien, MSSV, SoPhong, TenToaNha tu JOIN)
+- sp_BienLaiThu_Create (tu dong cap nhat HoaDon.TrangThai = 'Da thanh toan' va NgayThanhToan)
+- sp_BienLaiThu_Update
+- sp_BienLaiThu_Delete
+- sp_BienLaiThu_GetBySinhVien
+- sp_BienLaiThu_Insert
+
+Backend Controller: ReceiptsController.cs
+Luu y: Stored procedures tra ve them enriched data (MaSinhVien, TenSinhVien, MSSV, SoPhong, TenToaNha) nhung controller khong map cac field nay. Model BienLaiThu khong co cac field nay.
+
+
+2.13. BANG KYLUAT (Ky Luat)
+-----------------------------
+Ten bang: KyLuat
+Mo ta: Quan ly cac vi pham va ky luat cua sinh vien
+
+Cac cot:
+- MaKyLuat (INT, IDENTITY, PRIMARY KEY)
+- MaSinhVien (INT, NOT NULL, FK -> SinhVien.MaSinhVien)
+- LoaiViPham (NVARCHAR(100), NOT NULL)
+- MoTa (NVARCHAR(1000), NOT NULL)
+- NgayViPham (DATE, NOT NULL)
+- MucPhat (DECIMAL(18,2), DEFAULT 0)
+- TrangThai (NVARCHAR(50), DEFAULT 'Chua xu ly')
+- GhiChu (NVARCHAR(1000))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaSinhVien -> SinhVien(MaSinhVien)
+
+Stored Procedures:
+- sp_KyLuat_GetAll (tra ve them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha)
+- sp_KyLuat_GetById
+- sp_KyLuat_Create
+- sp_KyLuat_Update
+- sp_KyLuat_Delete
+- sp_KyLuat_GetBySinhVien
+- sp_KyLuat_Insert
+
+Backend Controller: ViolationsController.cs
+DTO Response: KyLuatResponse (co them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha)
+
+
+2.14. BANG DIEMRENLUYEN (Diem Ren Luyen)
+------------------------------------------
+Ten bang: DiemRenLuyen
+Mo ta: Quan ly diem ren luyen hang thang cua sinh vien
+
+Cac cot:
+- MaDiem (INT, IDENTITY, PRIMARY KEY)
+- MaSinhVien (INT, NOT NULL, FK -> SinhVien.MaSinhVien)
+- Thang (INT, NOT NULL)
+- Nam (INT, NOT NULL)
+- DiemSo (DECIMAL(5,2), NOT NULL)
+- XepLoai (NVARCHAR(50), NOT NULL)
+- GhiChu (NVARCHAR(1000))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaSinhVien -> SinhVien(MaSinhVien)
+
+Stored Procedures:
+- sp_DiemRenLuyen_GetAll (tra ve them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha tu JOIN)
+- sp_DiemRenLuyen_GetById (tra ve them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha tu JOIN)
+- sp_DiemRenLuyen_Create
+- sp_DiemRenLuyen_Update
+- sp_DiemRenLuyen_Delete
+- sp_DiemRenLuyen_GetBySinhVien (tra ve them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha tu JOIN)
+- sp_DiemRenLuyen_GetBySinhVienAndMonth
+- sp_DiemRenLuyen_Insert
+
+Backend Controller: DisciplineScoresController.cs
+Luu y: Stored procedures tra ve them enriched data (TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha) nhung controller khong map cac field nay. Model DiemRenLuyen khong co cac field nay.
+
+
+2.15. BANG DONDANGKY (Don Dang Ky)
+------------------------------------
+Ten bang: DonDangKy
+Mo ta: Quan ly don dang ky phong cua sinh vien
+
+Cac cot:
+- MaDon (INT, IDENTITY, PRIMARY KEY)
+- MaSinhVien (INT, NOT NULL, FK -> SinhVien.MaSinhVien)
+- MaPhongDeXuat (INT, FK -> Phong.MaPhong, NULLABLE)
+- LyDo (NVARCHAR(1000))
+- NgayDangKy (DATE, NOT NULL)
+- TrangThai (NVARCHAR(50), DEFAULT 'Cho duyet')
+- GhiChu (NVARCHAR(1000))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaSinhVien -> SinhVien(MaSinhVien)
+- MaPhongDeXuat -> Phong(MaPhong)
+
+Stored Procedures:
+- sp_DonDangKy_GetAll (tra ve them TenSinhVien, MSSV, Lop, Khoa, PhongDeXuat, ToaNhaDeXuat)
+- sp_DonDangKy_GetById
+- sp_DonDangKy_Create
+- sp_DonDangKy_Update (tu dong tao HopDong khi duyet)
+- sp_DonDangKy_Delete
+- sp_DonDangKy_GetBySinhVien
+- sp_DonDangKy_Insert
+
+Backend Controller: RegistrationController.cs
+DTO Response: DonDangKyResponse (co them TenSinhVien, MSSV, Lop, Khoa, PhongDeXuat, ToaNhaDeXuat)
+
+
+2.16. BANG YEUCACHUYENPHONG (Yeu Cau Chuyen Phong)
+----------------------------------------------------
+Ten bang: YeuCauChuyenPhong
+Mo ta: Quan ly yeu cau chuyen phong cua sinh vien
+
+Cac cot:
+- MaYeuCau (INT, IDENTITY, PRIMARY KEY)
+- MaSinhVien (INT, NOT NULL, FK -> SinhVien.MaSinhVien)
+- PhongHienTai (INT, NOT NULL, FK -> Phong.MaPhong)
+- PhongMongMuon (INT, FK -> Phong.MaPhong, NULLABLE)
+- LyDo (NVARCHAR(1000), NOT NULL)
+- NgayYeuCau (DATE, NOT NULL)
+- TrangThai (NVARCHAR(50), DEFAULT 'Cho duyet')
+- GhiChu (NVARCHAR(1000))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaSinhVien -> SinhVien(MaSinhVien)
+- PhongHienTai -> Phong(MaPhong)
+- PhongMongMuon -> Phong(MaPhong)
+
+Stored Procedures:
+- sp_YeuCauChuyenPhong_GetAll (tra ve them TenSinhVien, MSSV, Lop, Khoa, PhongHienTaiSo, ToaNhaHienTai, PhongMongMuonSo, ToaNhaMongMuon tu JOIN)
+- sp_YeuCauChuyenPhong_GetById (tra ve them TenSinhVien, MSSV, Lop, Khoa, PhongHienTaiSo, ToaNhaHienTai, PhongMongMuonSo, ToaNhaMongMuon tu JOIN)
+- sp_YeuCauChuyenPhong_Create
+- sp_YeuCauChuyenPhong_Update (tu dong xu ly chuyen phong khi duyet: cap nhat Giuong, SinhVien.MaPhong, HopDong neu co)
+- sp_YeuCauChuyenPhong_Delete
+- sp_YeuCauChuyenPhong_GetBySinhVien
+- sp_YeuCauChuyenPhong_Insert
+
+Backend Controller: ChangeRequestsController.cs
+Luu y: Stored procedures tra ve them enriched data (TenSinhVien, MSSV, Lop, Khoa, PhongHienTaiSo, ToaNhaHienTai, PhongMongMuonSo, ToaNhaMongMuon) nhung controller khong map cac field nay. Model YeuCauChuyenPhong khong co cac field nay.
+
+
+2.17. BANG CHISODIENNUOC (Chi So Dien Nuoc)
+---------------------------------------------
+Ten bang: ChiSoDienNuoc
+Mo ta: Quan ly chi so dien nuoc hang thang cua cac phong
+
+Cac cot:
+- MaChiSo (INT, IDENTITY, PRIMARY KEY)
+- MaPhong (INT, NOT NULL, FK -> Phong.MaPhong)
+- Thang (INT, NOT NULL)
+- Nam (INT, NOT NULL)
+- ChiSoDien (INT, NOT NULL)
+- ChiSoNuoc (INT, NOT NULL)
+- NguoiGhi (NVARCHAR(100))
+- TrangThai (NVARCHAR(50), DEFAULT 'Da ghi')
+- GhiChu (NVARCHAR(1000))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaPhong -> Phong(MaPhong)
+
+Stored Procedures:
+- sp_ChiSoDienNuoc_GetAll (tra ve them SoPhong, TenToaNha tu JOIN)
+- sp_ChiSoDienNuoc_GetById (tra ve them SoPhong, TenToaNha tu JOIN)
+- sp_ChiSoDienNuoc_Create
+- sp_ChiSoDienNuoc_Update
+- sp_ChiSoDienNuoc_Delete
+- sp_ChiSoDienNuoc_GetByPhong (tra ve them SoPhong, TenToaNha tu JOIN)
+- sp_ChiSoDienNuoc_GetByThangNam
+
+Backend Controller: MeterReadingsController.cs
+Luu y: Stored procedures tra ve them enriched data (SoPhong, TenToaNha) nhung controller khong map cac field nay. Model ChiSoDienNuoc khong co cac field nay.
+
+
+2.18. BANG THONGBAOQUAHAN (Thong Bao Qua Han)
+-----------------------------------------------
+Ten bang: ThongBaoQuaHan
+Mo ta: Quan ly thong bao qua han thanh toan hoa don
+
+Cac cot:
+- MaThongBao (INT, IDENTITY, PRIMARY KEY)
+- MaSinhVien (INT, NOT NULL, FK -> SinhVien.MaSinhVien)
+- MaHoaDon (INT, FK -> HoaDon.MaHoaDon, NULLABLE)
+- NgayThongBao (DATE, NOT NULL)
+- NoiDung (NVARCHAR(1000), NOT NULL)
+- TrangThai (NVARCHAR(50), DEFAULT 'Da gui')
+- GhiChu (NVARCHAR(1000))
+- IsDeleted (BIT, DEFAULT 0)
+- NgayTao (DATETIME, DEFAULT GETDATE())
+- NguoiTao (NVARCHAR(100))
+- NgayCapNhat (DATETIME)
+- NguoiCapNhat (NVARCHAR(100))
+
+Foreign Keys:
+- MaSinhVien -> SinhVien(MaSinhVien)
+- MaHoaDon -> HoaDon(MaHoaDon)
+
+Stored Procedures:
+- sp_ThongBaoQuaHan_GetAll (tra ve them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha tu JOIN)
+- sp_ThongBaoQuaHan_GetById (tra ve them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha tu JOIN)
+- sp_ThongBaoQuaHan_Insert
+- sp_ThongBaoQuaHan_Update
+- sp_ThongBaoQuaHan_Delete
+- sp_ThongBaoQuaHan_GetBySinhVien
+
+Backend Controller: OverdueController.cs
+Background Service: OverdueBillService.cs (tu dong tao thong bao khi hoa don qua han)
+Luu y: Stored procedures tra ve them enriched data (TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha) nhung controller khong map cac field nay. Model ThongBaoQuaHan khong co cac field nay.
+
+
+================================================================================
+3. FOREIGN KEY RELATIONSHIPS
+================================================================================
+
+ToaNha (1) -> (N) Phong
+Phong (1) -> (N) Giuong
+Phong (1) -> (N) SinhVien
+Phong (1) -> (N) ChiSoDienNuoc
+SinhVien (1) -> (1) TaiKhoan (unique constraint)
+SinhVien (1) -> (N) HopDong
+SinhVien (1) -> (N) HoaDon
+SinhVien (1) -> (N) KyLuat
+SinhVien (1) -> (N) DiemRenLuyen
+SinhVien (1) -> (N) DonDangKy
+SinhVien (1) -> (N) YeuCauChuyenPhong
+SinhVien (1) -> (N) ThongBaoQuaHan
+Giuong (1) -> (N) HopDong
+HopDong (1) -> (N) HoaDon
+HoaDon (1) -> (N) ChiTietHoaDon
+HoaDon (1) -> (N) BienLaiThu
+HoaDon (1) -> (N) ThongBaoQuaHan
+Phong (1) -> (N) DonDangKy (MaPhongDeXuat)
+Phong (1) -> (N) YeuCauChuyenPhong (PhongHienTai, PhongMongMuon)
+
+
+================================================================================
+4. STORED PROCEDURES - MAPPING VOI BACKEND CONTROLLERS
+================================================================================
+
+4.1. AUTHENTICATION (AuthController.cs)
+----------------------------------------
+- sp_TaiKhoan_GetByTenDangNhap: Dang nhap (KHONG DUNG SP, DUNG DIRECT SQL)
+- sp_TaiKhoan_GetAll: Lay danh sach tai khoan (Admin) (tra ve them TenSinhVien, MSSV, SoLanDangNhapSai, NgayKhoa - CHI MAP TenSinhVien, MSSV)
+- sp_TaiKhoan_GetById: Lay chi tiet tai khoan (tra ve them TenSinhVien, MSSV, SoLanDangNhapSai, NgayKhoa - MAP TAT CA)
+- sp_TaiKhoan_Create: Tao tai khoan moi
+- sp_TaiKhoan_Update: Cap nhat tai khoan
+- sp_TaiKhoan_Delete: Xoa tai khoan (soft delete) (KHONG DUNG SP, DUNG DIRECT SQL)
+- sp_TaiKhoan_ChangePassword: Doi mat khau (KHONG DUNG SP, DUNG DIRECT SQL)
+
+4.2. BUILDINGS (BuildingsController.cs)
+-----------------------------------------
+- sp_ToaNha_GetAll: Lay danh sach toa nha
+- sp_ToaNha_GetById: Lay chi tiet toa nha
+- sp_ToaNha_Create: Tao toa nha moi
+- sp_ToaNha_Update: Cap nhat toa nha
+- sp_ToaNha_Delete: Xoa toa nha (soft delete)
+
+4.3. ROOMS (RoomsController.cs)
+---------------------------------
+- sp_Phong_GetAll: Lay danh sach phong (tra ve them TenToaNha - CO MAP)
+- sp_Phong_GetById: Lay chi tiet phong (tra ve them TenToaNha - CO MAP)
+- sp_Phong_Create: Tao phong moi
+- sp_Phong_Update: Cap nhat phong
+- sp_Phong_Delete: Xoa phong (soft delete)
+- sp_Phong_GetAvailable: Lay danh sach phong con trong
+- sp_Phong_GetCurrentBySinhVien: Lay phong hien tai cua sinh vien
+- sp_Phong_GetEmpty: Lay danh sach phong trong
+
+4.4. BEDS (BedsController.cs)
+------------------------------
+- sp_Giuong_GetAll: Lay danh sach giuong
+- sp_Giuong_GetById: Lay chi tiet giuong
+- sp_Giuong_Create: Tao giuong moi
+- sp_Giuong_Update: Cap nhat giuong
+- sp_Giuong_Delete: Xoa giuong (soft delete)
+
+4.5. STUDENTS (StudentsController.cs)
+--------------------------------------
+- sp_SinhVien_GetAll: Lay danh sach sinh vien (tra ve them SoPhong, TenToaNha - CO MAP)
+- sp_SinhVien_GetById: Lay chi tiet sinh vien (tra ve them SoPhong, TenToaNha - CO MAP)
+- sp_SinhVien_Create: Tao sinh vien moi (tu dong tao TaiKhoan voi TenDangNhap = MSSV, MatKhau = MSSV)
+- sp_SinhVien_Update: Cap nhat sinh vien
+- sp_SinhVien_Delete: Xoa sinh vien (soft delete)
+- sp_SinhVien_GetByTaiKhoan: Lay sinh vien theo tai khoan (tra ve them SoPhong, TenToaNha - CO MAP)
+- sp_SinhVien_GetByPhong: Lay danh sach sinh vien trong phong (tra ve them SoPhong, TenToaNha - CO MAP)
+- sp_SinhVien_UpdateProfile: Cap nhat thong tin ca nhan
+
+4.6. CONTRACTS (ContractsController.cs)
+-----------------------------------------
+- sp_HopDong_GetAll: Lay danh sach hop dong (tra ve them TenSinhVien, MSSV, SoGiuong, SoPhong, TenToaNha - KHONG MAP)
+- sp_HopDong_GetById: Lay chi tiet hop dong (tra ve them TenSinhVien, MSSV, SoGiuong, SoPhong, TenToaNha - KHONG MAP)
+- sp_HopDong_Create: Tao hop dong moi
+- sp_HopDong_Update: Cap nhat hop dong
+- sp_HopDong_Delete: Xoa hop dong (soft delete)
+- sp_HopDong_GetBySinhVien: Lay hop dong cua sinh vien
+
+4.7. BILLS (BillsController.cs)
+---------------------------------
+- sp_HoaDon_GetAll: Lay danh sach hoa don (tra ve them TenSinhVien, MSSV, SoPhong, TenToaNha - KHONG MAP)
+- sp_HoaDon_GetById: Lay chi tiet hoa don (tra ve them TenSinhVien, MSSV, SoPhong, TenToaNha - KHONG MAP)
+- sp_HoaDon_Create: Tao hoa don moi
+- sp_HoaDon_Update: Cap nhat hoa don
+- sp_HoaDon_Delete: Xoa hoa don (soft delete)
+- sp_HoaDon_GetBySinhVien: Lay hoa don cua sinh vien (tra ve them TenSinhVien, MSSV, SoPhong, TenToaNha - KHONG MAP)
+- sp_HoaDon_GenerateMonthly: Tao hoa don hang thang (background service)
+- sp_ChiTietHoaDon_GetAll: Lay chi tiet hoa don
+- sp_ChiTietHoaDon_GetById: Lay chi tiet theo ID
+- sp_ChiTietHoaDon_Create: Tao chi tiet hoa don
+- sp_ChiTietHoaDon_Update: Cap nhat chi tiet
+- sp_ChiTietHoaDon_Delete: Xoa chi tiet
+- sp_ChiTietHoaDon_GetByHoaDon: Lay chi tiet theo hoa don
+
+4.8. RECEIPTS (ReceiptsController.cs)
+---------------------------------------
+- sp_BienLaiThu_GetAll: Lay danh sach bien lai (tra ve them MaSinhVien, TenSinhVien, MSSV, SoPhong, TenToaNha - KHONG MAP)
+- sp_BienLaiThu_GetById: Lay chi tiet bien lai (tra ve them MaSinhVien, TenSinhVien, MSSV, SoPhong, TenToaNha - KHONG MAP)
+- sp_BienLaiThu_Create: Tao bien lai moi (tu dong cap nhat HoaDon.TrangThai = 'Da thanh toan' va NgayThanhToan)
+- sp_BienLaiThu_Update: Cap nhat bien lai
+- sp_BienLaiThu_Delete: Xoa bien lai (soft delete)
+- sp_BienLaiThu_GetBySinhVien: Lay bien lai cua sinh vien
+
+4.9. VIOLATIONS (ViolationsController.cs)
+-------------------------------------------
+- sp_KyLuat_GetAll: Lay danh sach ky luat (co them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha)
+- sp_KyLuat_GetById: Lay chi tiet ky luat
+- sp_KyLuat_Create: Tao ky luat moi
+- sp_KyLuat_Update: Cap nhat ky luat
+- sp_KyLuat_Delete: Xoa ky luat (soft delete)
+- sp_KyLuat_GetBySinhVien: Lay ky luat cua sinh vien
+
+4.10. DISCIPLINE SCORES (DisciplineScoresController.cs)
+---------------------------------------------------------
+- sp_DiemRenLuyen_GetAll: Lay danh sach diem ren luyen (tra ve them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha - KHONG MAP)
+- sp_DiemRenLuyen_GetById: Lay chi tiet diem ren luyen (tra ve them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha - KHONG MAP)
+- sp_DiemRenLuyen_Create: Tao diem ren luyen moi
+- sp_DiemRenLuyen_Update: Cap nhat diem ren luyen
+- sp_DiemRenLuyen_Delete: Xoa diem ren luyen (soft delete)
+- sp_DiemRenLuyen_GetBySinhVien: Lay diem ren luyen cua sinh vien (tra ve them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha - KHONG MAP)
+- sp_DiemRenLuyen_GetBySinhVienAndMonth: Lay diem ren luyen theo thang/nam
+
+4.11. REGISTRATIONS (RegistrationController.cs)
+-------------------------------------------------
+- sp_DonDangKy_GetAll: Lay danh sach don dang ky (co them TenSinhVien, MSSV, Lop, Khoa, PhongDeXuat, ToaNhaDeXuat)
+- sp_DonDangKy_GetById: Lay chi tiet don dang ky
+- sp_DonDangKy_Create: Tao don dang ky moi
+- sp_DonDangKy_Update: Cap nhat don dang ky (tu dong tao HopDong khi duyet)
+- sp_DonDangKy_Delete: Xoa don dang ky (soft delete)
+- sp_DonDangKy_GetBySinhVien: Lay don dang ky cua sinh vien
+
+4.12. CHANGE REQUESTS (ChangeRequestsController.cs)
+-----------------------------------------------------
+- sp_YeuCauChuyenPhong_GetAll: Lay danh sach yeu cau chuyen phong (tra ve them TenSinhVien, MSSV, Lop, Khoa, PhongHienTaiSo, ToaNhaHienTai, PhongMongMuonSo, ToaNhaMongMuon - KHONG MAP)
+- sp_YeuCauChuyenPhong_GetById: Lay chi tiet yeu cau (tra ve them TenSinhVien, MSSV, Lop, Khoa, PhongHienTaiSo, ToaNhaHienTai, PhongMongMuonSo, ToaNhaMongMuon - KHONG MAP)
+- sp_YeuCauChuyenPhong_Create: Tao yeu cau moi
+- sp_YeuCauChuyenPhong_Update: Cap nhat yeu cau (tu dong xu ly chuyen phong khi duyet: cap nhat Giuong, SinhVien.MaPhong, HopDong neu co)
+- sp_YeuCauChuyenPhong_Delete: Xoa yeu cau (soft delete)
+- sp_YeuCauChuyenPhong_GetBySinhVien: Lay yeu cau cua sinh vien
+
+4.13. METER READINGS (MeterReadingsController.cs)
+---------------------------------------------------
+- sp_ChiSoDienNuoc_GetAll: Lay danh sach chi so dien nuoc (tra ve them SoPhong, TenToaNha - KHONG MAP)
+- sp_ChiSoDienNuoc_GetById: Lay chi tiet chi so (tra ve them SoPhong, TenToaNha - KHONG MAP)
+- sp_ChiSoDienNuoc_Create: Tao chi so moi
+- sp_ChiSoDienNuoc_Update: Cap nhat chi so
+- sp_ChiSoDienNuoc_Delete: Xoa chi so (soft delete)
+- sp_ChiSoDienNuoc_GetByPhong: Lay chi so theo phong (tra ve them SoPhong, TenToaNha - KHONG MAP)
+- sp_ChiSoDienNuoc_GetByThangNam: Lay chi so theo thang/nam
+
+4.14. OVERDUE NOTICES (OverdueController.cs)
+----------------------------------------------
+- sp_ThongBaoQuaHan_GetAll: Lay danh sach thong bao qua han (tra ve them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha - KHONG MAP)
+- sp_ThongBaoQuaHan_GetById: Lay chi tiet thong bao (tra ve them TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha - KHONG MAP)
+- sp_ThongBaoQuaHan_Insert: Tao thong bao moi
+- sp_ThongBaoQuaHan_Update: Cap nhat thong bao
+- sp_ThongBaoQuaHan_Delete: Xoa thong bao (soft delete)
+- sp_ThongBaoQuaHan_GetBySinhVien: Lay thong bao cua sinh vien
+
+4.15. FEES (FeesController.cs)
+--------------------------------
+- sp_MucPhi_GetAll: Lay danh sach muc phi
+- sp_MucPhi_GetById: Lay chi tiet muc phi
+- sp_MucPhi_Create: Tao muc phi moi
+- sp_MucPhi_Update: Cap nhat muc phi
+- sp_MucPhi_Delete: Xoa muc phi (soft delete)
+- sp_MucPhi_GetByLoaiPhi: Lay muc phi theo loai
+- sp_MucPhi_GetByType: Lay muc phi theo type
+
+4.16. PRICE TIERS (PriceTiersController.cs)
+---------------------------------------------
+- sp_BacGia_GetAll: Lay danh sach bac gia
+- sp_BacGia_GetById: Lay chi tiet bac gia
+- sp_BacGia_Create: Tao bac gia moi
+- sp_BacGia_Update: Cap nhat bac gia
+- sp_BacGia_Delete: Xoa bac gia (soft delete)
+- sp_BacGia_GetByLoaiPhi: Lay bac gia theo loai (Dien/Nuoc)
+
+4.17. FEE CONFIGURATION (CauHinhPhiController.cs)
+--------------------------------------------------
+- sp_CauHinhPhi_GetAll: Lay danh sach cau hinh phi
+- sp_CauHinhPhi_GetById: Lay chi tiet cau hinh
+- sp_CauHinhPhi_GetByLoai: Lay cau hinh theo loai (Dien/Nuoc)
+- sp_CauHinhPhi_Create: Tao cau hinh moi
+- sp_CauHinhPhi_Update: Cap nhat cau hinh
+- sp_CauHinhPhi_Delete: Xoa cau hinh (soft delete)
+
+4.18. REPORTS (ReportsController.cs)
+--------------------------------------
+- sp_BaoCaoTyLeLapDay: Bao cao ty le lap day phong
+- sp_BaoCaoDoanhThu: Bao cao doanh thu
+- sp_BaoCaoCongNo: Bao cao cong no
+- sp_BaoCaoDienNuoc: Bao cao dien nuoc
+- sp_BaoCaoKyLuat: Bao cao ky luat theo thang/nam
+
+4.19. UTILITY PROCEDURES
+-------------------------
+- sp_TinhTienDien: Tinh tien dien theo bac gia
+- sp_TinhTienNuoc: Tinh tien nuoc theo bac gia
+- sp_TaoHoaDonHangThang: Tao hoa don hang thang cho tat ca sinh vien
+
+
+================================================================================
+5. DTO RESPONSES - ENRICHED DATA
+================================================================================
+
+5.1. KyLuatResponse
+--------------------
+Duoc su dung trong: ViolationsController.cs (Admin & User API)
+
+Cac field them vao so voi entity KyLuat:
+- TenSinhVien (string?)
+- MSSV (string?)
+- Lop (string?)
+- Khoa (string?)
+- SoPhong (string?)
+- TenToaNha (string?)
+
+Stored Procedure: sp_KyLuat_GetAll, sp_KyLuat_GetById, sp_KyLuat_GetBySinhVien
+- JOIN voi SinhVien, Phong, ToaNha de lay thong tin bo sung
+- Controller MAP tat ca cac field nay vao KyLuatResponse
+
+5.2. DonDangKyResponse
+-----------------------
+Duoc su dung trong: RegistrationController.cs (Admin & User API)
+
+Cac field them vao so voi entity DonDangKy:
+- TenSinhVien (string?)
+- MSSV (string?)
+- Lop (string?)
+- Khoa (string?)
+- PhongDeXuat (string?)
+- ToaNhaDeXuat (string?)
+
+Stored Procedure: sp_DonDangKy_GetAll, sp_DonDangKy_GetById, sp_DonDangKy_GetBySinhVien
+- JOIN voi SinhVien, Phong, ToaNha de lay thong tin bo sung
+- Controller MAP tat ca cac field nay vao DonDangKyResponse
+
+5.3. Cac Stored Procedures Co Enriched Data NHUNG KHONG MAP
+------------------------------------------------------------
+Cac stored procedures sau tra ve them enriched data tu JOIN nhung controllers KHONG map:
+
+- sp_HopDong_GetAll, sp_HopDong_GetById: Tra ve TenSinhVien, MSSV, SoGiuong, SoPhong, TenToaNha
+- sp_HoaDon_GetAll, sp_HoaDon_GetById, sp_HoaDon_GetBySinhVien: Tra ve TenSinhVien, MSSV, SoPhong, TenToaNha
+- sp_BienLaiThu_GetAll, sp_BienLaiThu_GetById: Tra ve MaSinhVien, TenSinhVien, MSSV, SoPhong, TenToaNha
+- sp_ChiSoDienNuoc_GetAll, sp_ChiSoDienNuoc_GetById, sp_ChiSoDienNuoc_GetByPhong: Tra ve SoPhong, TenToaNha
+- sp_ThongBaoQuaHan_GetAll, sp_ThongBaoQuaHan_GetById: Tra ve TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha
+- sp_YeuCauChuyenPhong_GetAll, sp_YeuCauChuyenPhong_GetById: Tra ve TenSinhVien, MSSV, Lop, Khoa, PhongHienTaiSo, ToaNhaHienTai, PhongMongMuonSo, ToaNhaMongMuon
+- sp_DiemRenLuyen_GetAll, sp_DiemRenLuyen_GetById, sp_DiemRenLuyen_GetBySinhVien: Tra ve TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha
+
+Luu y: Neu can dung cac field nay trong API response, can tao DTOs tuong ung hoac them properties vao models.
+
+
+================================================================================
+6. BUSINESS LOGIC - STORED PROCEDURES DAC BIET
+================================================================================
+
+6.1. sp_DonDangKy_Update
+-------------------------
+Khi duyet don dang ky (TrangThai = 'Da duyet'):
+- Tu dong tao HopDong neu MaGiuong duoc cap
+- Goi sp_HopDong_Create de tao hop dong
+- Capture MaHopDong tra ve bang table variable (@HopDongResult TABLE (MaHopDong INT))
+- Cap nhat DonDangKy voi MaHopDong
+- Luu y: Procedure nay co transaction de dam bao tinh nhat quan
+
+6.2. sp_TaoHoaDonHangThang
+---------------------------
+- Tao hoa don hang thang cho tat ca sinh vien co hop dong hieu luc
+- Tinh tien phong, dien, nuoc
+- Goi sp_TinhTienDien va sp_TinhTienNuoc
+- Tu dong tao ChiTietHoaDon
+
+6.3. sp_HoaDon_GenerateMonthly
+-------------------------------
+- Background service goi hang thang
+- Tao hoa don cho thang hien tai
+- Tinh toan chi phi tu ChiSoDienNuoc
+- Goi sp_TinhTienDien va sp_TinhTienNuoc de tinh tien theo bac gia
+- Tu dong tao ChiTietHoaDon cho cac khoan chi
+
+6.4. OverdueBillService.cs (Background Service)
+------------------------------------------------
+- Chay dinh ky de kiem tra hoa don qua han
+- Query truc tiep: SELECT tu HoaDon, SinhVien, Phong (KHONG DUNG STORED PROCEDURE)
+- Query su dung: p.SoPhong (KHONG PHAI p.TenPhong - da fix)
+- Tu dong tao ThongBaoQuaHan neu chua co
+- Goi sp_ThongBaoQuaHan_Insert
+
+6.5. sp_BienLaiThu_Create
+--------------------------
+- Tu dong cap nhat HoaDon.TrangThai = 'Da thanh toan' va NgayThanhToan = @NgayThu
+- Khi tao bien lai, hoa don tu dong duoc danh dau la da thanh toan
+
+
+================================================================================
+7. SEED DATA STRUCTURE
+================================================================================
+
+7.1. Seed Data Files
+---------------------
+- 14_SeedData_Admin.sql: Tai khoan Admin (admin/admin@123)
+- 15_SeedData_Officer.sql: Tai khoan Officer (officer/officer@123)
+- 16_SeedData_Student.sql: Tai khoan Student va SinhVien MaSinhVien = 1
+- 17_SeedData_Sample.sql: Du lieu mau cho tat ca cac bang
+
+7.2. Thu Tu Chay Seed Data
+----------------------------
+1. 14_SeedData_Admin.sql
+2. 15_SeedData_Officer.sql
+3. 16_SeedData_Student.sql (tao SinhVien = 1)
+4. 17_SeedData_Sample.sql (can SinhVien = 1 da ton tai)
+
+7.3. Luu Y Seed Data
+---------------------
+- Tat ca seed data deu co validation de tranh FOREIGN KEY constraint
+- Kiem tra ton tai truoc khi INSERT
+- Su dung IDENTITY_INSERT khi can thiet
+- Soft delete: IsDeleted = 0
+
+
+================================================================================
+8. INDEXES VA PERFORMANCE
+================================================================================
+
+8.1. Unique Constraints
+------------------------
+- TaiKhoan.TenDangNhap: UNIQUE
+- SinhVien.MSSV: UNIQUE
+- TaiKhoan.MaSinhVien: UNIQUE (filtered index, IsDeleted = 0)
+
+8.2. Foreign Key Indexes
+--------------------------
+- Tat ca Foreign Keys deu co index tu dong
+- MaToaNha, MaPhong, MaGiuong, MaSinhVien, etc.
+
+8.3. Query Optimization
+------------------------
+- Stored procedures su dung JOIN de lay du lieu phong phu
+- Soft delete: WHERE IsDeleted = 0 trong tat ca queries
+- Indexes tren cac cot thuong duoc filter (TrangThai, IsDeleted)
+
+
+================================================================================
+9. CONNECTION STRING
+================================================================================
+
+Server: WINDOWS-PC\SQLEXPRESS
+Database: QuanLyKyTucXa
+Connection String Format:
+  "Server=WINDOWS-PC\\SQLEXPRESS;Database=QuanLyKyTucXa;Integrated Security=True;TrustServerCertificate=True;"
+
+
+================================================================================
+10. LUU Y QUAN TRONG CHO BACKEND DEVELOPER
+================================================================================
+
+10.1. Soft Delete
+------------------
+- TAT CA queries phai co WHERE IsDeleted = 0
+- Stored procedures da co san dieu kien nay
+- Khi xoa: UPDATE IsDeleted = 1, khong phai DELETE
+
+10.2. Audit Fields
+-------------------
+- NgayTao, NguoiTao: Tu dong khi CREATE
+- NgayCapNhat, NguoiCapNhat: Tu dong khi UPDATE
+- Backend can truyen NguoiTao/NguoiCapNhat (user ID hoac username)
+
+10.3. Stored Procedures vs Direct SQL
+---------------------------------------
+- UU TIEN su dung stored procedures
+- Direct SQL chi dung trong:
+  * OverdueBillService.cs (query phuc tap, khong dung SP)
+  * AuthController.cs Login() (query truc tiep de kiem tra mat khau)
+  * AuthController.cs DeleteUser(), ChangePassword(), ResetPassword(), LockOrUnlockUser() (khong dung SP)
+  * Validation checks (COUNT, EXISTS)
+
+10.4. Error Handling
+---------------------
+- Stored procedures tra ve:
+  * MaHopDong, MaHoaDon, etc. qua SELECT SCOPE_IDENTITY()
+  * Khong dung RETURN value
+- Backend can capture bang SqlDataReader hoac ExecuteScalar
+
+10.5. Transaction Handling
+---------------------------
+- sp_DonDangKy_Update: Co transaction de dam bao tao HopDong thanh cong
+- Backend khong can wrap trong transaction (stored procedure da xu ly)
+
+10.6. DTO Mapping
+------------------
+- KyLuatResponse va DonDangKyResponse: Map tu SqlDataReader
+- Stored procedures tra ve them cac cot JOIN (TenSinhVien, SoPhong, etc.)
+- Backend can doc truc tiep tu SqlDataReader
+- Luu y: Nhieu stored procedures tra ve enriched data nhung controllers khong map:
+  * HopDong: TenSinhVien, MSSV, SoGiuong, SoPhong, TenToaNha - KHONG MAP
+  * HoaDon: TenSinhVien, MSSV, SoPhong, TenToaNha - KHONG MAP
+  * BienLaiThu: MaSinhVien, TenSinhVien, MSSV, SoPhong, TenToaNha - KHONG MAP
+  * ChiSoDienNuoc: SoPhong, TenToaNha - KHONG MAP
+  * ThongBaoQuaHan: TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha - KHONG MAP
+- Neu can dung cac field nay, tao DTOs hoac them properties vao models
+
+10.7. Background Services
+--------------------------
+- OverdueBillService: Chay dinh ky, query truc tiep
+- Can dam bao connection string dung
+- Log errors de debug
+
+10.8. Password Hashing
+-----------------------
+- Mat khau duoc hash bang BCrypt.Net
+- Hash format: $2a$12$...
+- Backend can su dung BCrypt.Net.BCrypt.HashPassword() va Verify()
+
+10.9. Date Handling
+--------------------
+- DATE: Dung cho NgayBatDau, NgayKetThuc, NgaySinh
+- DATETIME: Dung cho NgayTao, NgayCapNhat
+- Backend can truyen DateTime, SQL Server se convert tu dong
+
+10.10. NULL Handling
+---------------------
+- Nhieu cot cho phep NULL (MaPhong, MaHoaDon, etc.)
+- Backend can kiem tra IsDBNull() truoc khi doc
+- DTO properties nen la nullable (string?, int?, DateTime?)
+
+
+================================================================================
+11. TESTING
+================================================================================
+
+11.1. Test Accounts
+--------------------
+- Admin: admin / admin@123
+- Officer: officer / officer@123
+- Student: student / student@123 (MaSinhVien = 1)
+
+11.2. Test Data
+----------------
+- Seed data trong 17_SeedData_Sample.sql
+- Co du lieu cho tat ca cac bang
+- Co the chay lai seed data nhieu lan (idempotent)
+
+11.3. API Testing
+------------------
+- Postman collection: Postman/QuanLyKTX.postman_collection.json
+- Environment: Postman/QuanLyKTX.postman_environment.json
+- Gateway URL: http://localhost:8000
+- Admin API: http://localhost:8001
+- User API: http://localhost:8002
+
+
+================================================================================
+12. MAU CODE BACKEND - CALLING STORED PROCEDURES
+================================================================================
+
+12.1. Get All (Example: Buildings)
+------------------------------------
+using var connection = new SqlConnection(_connectionString);
+await connection.OpenAsync();
+
+using var command = new SqlCommand("sp_ToaNha_GetAll", connection);
+command.CommandType = CommandType.StoredProcedure;
+
+using var reader = await command.ExecuteReaderAsync();
+var buildings = new List<ToaNha>();
+
+while (await reader.ReadAsync())
+{
+    buildings.Add(new ToaNha
+    {
+        MaToaNha = reader.GetInt32("MaToaNha"),
+        TenToaNha = reader.GetString("TenToaNha"),
+        // ... map other fields
+    });
+}
+
+return Ok(new { success = true, data = buildings });
+
+12.2. Get By ID (Example: Building)
+-------------------------------------
+using var connection = new SqlConnection(_connectionString);
+await connection.OpenAsync();
+
+using var command = new SqlCommand("sp_ToaNha_GetById", connection);
+command.CommandType = CommandType.StoredProcedure;
+command.Parameters.AddWithValue("@MaToaNha", id);
+
+using var reader = await command.ExecuteReaderAsync();
+if (!await reader.ReadAsync())
+    return NotFound();
+
+var building = new ToaNha
+{
+    MaToaNha = reader.GetInt32("MaToaNha"),
+    // ... map fields
+};
+
+return Ok(new { success = true, data = building });
+
+12.3. Create (Example: Building)
+----------------------------------
+using var connection = new SqlConnection(_connectionString);
+await connection.OpenAsync();
+
+using var command = new SqlCommand("sp_ToaNha_Create", connection);
+command.CommandType = CommandType.StoredProcedure;
+command.Parameters.AddWithValue("@TenToaNha", model.TenToaNha);
+command.Parameters.AddWithValue("@DiaChi", model.DiaChi);
+// ... other parameters
+command.Parameters.AddWithValue("@NguoiTao", GetCurrentUserId());
+
+var newId = await command.ExecuteScalarAsync();
+return Ok(new { success = true, data = new { MaToaNha = newId } });
+
+12.4. Update (Example: Building)
+----------------------------------
+using var connection = new SqlConnection(_connectionString);
+await connection.OpenAsync();
+
+using var command = new SqlCommand("sp_ToaNha_Update", connection);
+command.CommandType = CommandType.StoredProcedure;
+command.Parameters.AddWithValue("@MaToaNha", id);
+command.Parameters.AddWithValue("@TenToaNha", model.TenToaNha);
+// ... other parameters
+command.Parameters.AddWithValue("@NguoiCapNhat", GetCurrentUserId());
+
+await command.ExecuteNonQueryAsync();
+return Ok(new { success = true, message = "Cap nhat thanh cong" });
+
+12.5. Delete (Soft Delete)
+---------------------------
+using var connection = new SqlConnection(_connectionString);
+await connection.OpenAsync();
+
+using var command = new SqlCommand("sp_ToaNha_Delete", connection);
+command.CommandType = CommandType.StoredProcedure;
+command.Parameters.AddWithValue("@MaToaNha", id);
+command.Parameters.AddWithValue("@NguoiCapNhat", GetCurrentUserId());
+
+await command.ExecuteNonQueryAsync();
+return Ok(new { success = true, message = "Xoa thanh cong" });
+
+12.6. Map DTO with JOIN data (Example: KyLuatResponse)
+-------------------------------------------------------
+private static KyLuatResponse MapViolation(SqlDataReader reader)
+{
+    return new KyLuatResponse
+    {
+        MaKyLuat = reader.GetInt32("MaKyLuat"),
+        MaSinhVien = reader.GetInt32("MaSinhVien"),
+        LoaiViPham = reader.GetString("LoaiViPham"),
+        MoTa = reader.GetString("MoTa"),
+        NgayViPham = reader.GetDateTime("NgayViPham"),
+        MucPhat = reader.GetDecimal("MucPhat"),
+        TrangThai = reader.GetString("TrangThai"),
+        GhiChu = reader.IsDBNull("GhiChu") ? null : reader.GetString("GhiChu"),
+        IsDeleted = reader.GetBoolean("IsDeleted"),
+        NgayTao = reader.GetDateTime("NgayTao"),
+        NguoiTao = reader.IsDBNull("NguoiTao") ? null : reader.GetString("NguoiTao"),
+        NgayCapNhat = reader.IsDBNull("NgayCapNhat") ? (DateTime?)null : reader.GetDateTime("NgayCapNhat"),
+        NguoiCapNhat = reader.IsDBNull("NguoiCapNhat") ? null : reader.GetString("NguoiCapNhat"),
+        
+        // Enriched fields from JOIN
+        TenSinhVien = reader.IsDBNull("TenSinhVien") ? null : reader.GetString("TenSinhVien"),
+        MSSV = reader.IsDBNull("MSSV") ? null : reader.GetString("MSSV"),
+        Lop = reader.IsDBNull("Lop") ? null : reader.GetString("Lop"),
+        Khoa = reader.IsDBNull("Khoa") ? null : reader.GetString("Khoa"),
+        SoPhong = reader.IsDBNull("SoPhong") ? null : reader.GetString("SoPhong"),
+        TenToaNha = reader.IsDBNull("TenToaNha") ? null : reader.GetString("TenToaNha")
+    };
+}
+
+12.7. Map Model with JOIN data (Example: SinhVien, Phong)
+-----------------------------------------------------------
+// SinhVien model co properties SoPhong, TenToaNha
+students.Add(new SinhVien
+{
+    // ... base fields
+    SoPhong = reader.IsDBNull("SoPhong") ? null : reader.GetString("SoPhong"),
+    TenToaNha = reader.IsDBNull("TenToaNha") ? null : reader.GetString("TenToaNha")
+});
+
+// Phong model co property TenToaNha
+rooms.Add(new Phong
+{
+    // ... base fields
+    TenToaNha = reader.IsDBNull("TenToaNha") ? null : reader.GetString("TenToaNha")
+});
+
+
+================================================================================
+13. TROUBLESHOOTING
+================================================================================
+
+13.1. Foreign Key Constraint Errors
+------------------------------------
+- Kiem tra ban ghi phu thuoc da ton tai chua
+- Kiem tra IsDeleted = 0 (khong xoa ban ghi dang duoc tham chieu)
+- Seed data phai chay theo thu tu dung
+
+13.2. Stored Procedure Not Found
+----------------------------------
+- Kiem tra ten stored procedure dung (sp_*)
+- Kiem tra database connection
+- Kiem tra quyen truy cap
+
+13.3. NULL Reference Errors
+----------------------------
+- Luon kiem tra IsDBNull() truoc khi doc
+- Dung nullable types trong DTOs
+- Kiem tra stored procedure tra ve dung cot
+
+13.4. Connection String Issues
+-------------------------------
+- Kiem tra server name dung (WINDOWS-PC\SQLEXPRESS)
+- Kiem tra database name (QuanLyKyTucXa)
+- Kiem tra Integrated Security hoac SQL Authentication
+
+
+================================================================================
+14. TONG KET - TINH NHAT QUAN
+================================================================================
+
+14.1. Stored Procedures Co Enriched Data VA Controller MAP
+-----------------------------------------------------------
+- sp_SinhVien_GetAll, sp_SinhVien_GetById: Tra ve SoPhong, TenToaNha - CO MAP
+- sp_Phong_GetAll, sp_Phong_GetById: Tra ve TenToaNha - CO MAP
+- sp_KyLuat_GetAll, sp_KyLuat_GetById: Tra ve TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha - CO MAP (DTO: KyLuatResponse)
+- sp_DonDangKy_GetAll, sp_DonDangKy_GetById: Tra ve TenSinhVien, MSSV, Lop, Khoa, PhongDeXuat, ToaNhaDeXuat - CO MAP (DTO: DonDangKyResponse)
+- sp_TaiKhoan_GetAll: Tra ve TenSinhVien, MSSV, SoLanDangNhapSai, NgayKhoa - CHI MAP TenSinhVien, MSSV
+- sp_TaiKhoan_GetById: Tra ve TenSinhVien, MSSV, SoLanDangNhapSai, NgayKhoa - MAP TAT CA
+
+14.2. Stored Procedures Co Enriched Data NHUNG Controller KHONG MAP
+---------------------------------------------------------------------
+- sp_HopDong_GetAll, sp_HopDong_GetById: Tra ve TenSinhVien, MSSV, SoGiuong, SoPhong, TenToaNha - KHONG MAP
+- sp_HoaDon_GetAll, sp_HoaDon_GetById, sp_HoaDon_GetBySinhVien: Tra ve TenSinhVien, MSSV, SoPhong, TenToaNha - KHONG MAP
+- sp_BienLaiThu_GetAll, sp_BienLaiThu_GetById: Tra ve MaSinhVien, TenSinhVien, MSSV, SoPhong, TenToaNha - KHONG MAP
+- sp_ChiSoDienNuoc_GetAll, sp_ChiSoDienNuoc_GetById, sp_ChiSoDienNuoc_GetByPhong: Tra ve SoPhong, TenToaNha - KHONG MAP
+- sp_ThongBaoQuaHan_GetAll, sp_ThongBaoQuaHan_GetById: Tra ve TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha - KHONG MAP
+- sp_YeuCauChuyenPhong_GetAll, sp_YeuCauChuyenPhong_GetById: Tra ve TenSinhVien, MSSV, Lop, Khoa, PhongHienTaiSo, ToaNhaHienTai, PhongMongMuonSo, ToaNhaMongMuon - KHONG MAP
+- sp_DiemRenLuyen_GetAll, sp_DiemRenLuyen_GetById, sp_DiemRenLuyen_GetBySinhVien: Tra ve TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha - KHONG MAP
+
+14.3. Controllers Dung Direct SQL Thay Vi Stored Procedures
+-------------------------------------------------------------
+- AuthController.cs Login(): Direct SQL de kiem tra mat khau
+- AuthController.cs DeleteUser(): Direct SQL UPDATE IsDeleted = 1
+- AuthController.cs ChangePassword(): Direct SQL UPDATE MatKhau
+- AuthController.cs ResetPassword(): Direct SQL UPDATE MatKhau
+- AuthController.cs LockOrUnlockUser(): Direct SQL UPDATE TrangThai
+- OverdueBillService.cs: Direct SQL query phuc tap
+
+14.4. Business Logic Dac Biet
+------------------------------
+- sp_DonDangKy_Update: Tu dong tao HopDong khi duyet (TrangThai = 'Da duyet'), cap nhat Giuong.TrangThai = 'Da co nguoi', SinhVien.MaPhong
+- sp_BienLaiThu_Create: Tu dong cap nhat HoaDon.TrangThai = 'Da thanh toan' va NgayThanhToan = @NgayThu
+- sp_KyLuat_Create: Tu dong tru diem ren luyen (cap nhat DiemRenLuyen) va tao hoa don phat (neu MucPhat > 0)
+- sp_SinhVien_Create: Tu dong tao TaiKhoan voi TenDangNhap = MSSV, MatKhau = MSSV (plaintext, se duoc hash khi dang nhap lan dau)
+- sp_YeuCauChuyenPhong_Update: Tu dong xu ly chuyen phong khi duyet (TrangThai = 'Da duyet'): cap nhat Giuong.TrangThai, SinhVien.MaPhong, HopDong neu co
+
+14.5. Luu Y Quan Trong
+-----------------------
+- Tat ca stored procedures Get* tra ve enriched data tu JOIN
+- Controllers can kiem tra IsDBNull() truoc khi doc cac field JOIN
+- Neu can dung enriched data trong API response, tao DTOs hoac them properties vao models
+- Models SinhVien, Phong da co properties cho enriched data (SoPhong, TenToaNha)
+- Models HopDong, HoaDon, BienLaiThu, ChiSoDienNuoc, ThongBaoQuaHan, YeuCauChuyenPhong, DiemRenLuyen KHONG co properties cho enriched data
+- DTOs: KyLuatResponse, DonDangKyResponse co day du enriched data va duoc map tu controllers
+
+
+================================================================================
+END OF DOCUMENT
+================================================================================
+
+Luu y: Tai lieu nay duoc tao tu CSDL.sql va codebase hien tai.
+Neu co thay doi trong database hoac stored procedures, can cap nhat lai tai lieu nay.
+
+Ngay cap nhat cuoi: 2025-02-XX
+Da kiem tra tinh nhat quan: Database <-> Stored Procedures <-> Controllers <-> Models
+
