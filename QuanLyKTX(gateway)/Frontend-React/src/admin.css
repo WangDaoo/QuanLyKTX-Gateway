@@ -1,0 +1,245 @@
+/* ============================================================
+   Admin/Student Pages — Only needed overrides
+   Base design is in design-system.css
+   ============================================================ */
+
+/* === LOADING OVERLAY === */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.loading-overlay.show { display: flex !important; }
+
+.loading-spinner {
+  background: var(--color-surface);
+  padding: 32px 40px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+}
+.loading-spinner i { font-size: 2rem; color: var(--color-primary); margin-bottom: 12px; }
+.loading-spinner p { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+
+/* === BADGES (override — use new badge system) === */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-success { background: var(--color-success-light); color: #065f46; }
+.badge-danger  { background: var(--color-danger-light);  color: #991b1b; }
+.badge-warning  { background: var(--color-warning-light); color: #92400e; }
+.badge-info     { background: var(--color-info-light);    color: #1e40af; }
+.badge-secondary { background: var(--color-bg); color: var(--color-text-muted); }
+
+/* === FORM COLS === */
+.form-col {
+  flex: 1 0 0%;
+  padding: 0 6px;
+}
+.form-col-6 { flex: 0 0 50%; max-width: 50%; padding: 0 6px; }
+.form-col-4 { flex: 0 0 33.33%; max-width: 33.33%; padding: 0 6px; }
+.form-col-3 { flex: 0 0 25%; max-width: 25%; padding: 0 6px; }
+
+/* === BUILDINGS PAGE SPECIFIC === */
+.buildings-page .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.buildings-page .action-buttons {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.modal-content.modal-large { max-width: 720px; }
+
+/* === RESPONSIVE === */
+@media (max-width: 992px) {
+  .buildings-page .sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    height: 100vh;
+    z-index: 200;
+    transition: left 0.3s ease;
+  }
+  .buildings-page .sidebar.show { left: 0; }
+}
+
+@media (max-width: 768px) {
+  .form-row { flex-direction: column; }
+  .buildings-page table thead { display: none; }
+  .buildings-page table tbody tr {
+    display: block;
+    margin-bottom: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+  }
+  .buildings-page table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border: none !important;
+    font-size: var(--font-size-xs);
+  }
+  .buildings-page table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+}
+
+/* === NOTIFICATION DROPDOWN (overrides from design-system) === */
+.notification-wrapper { position: relative; }
+
+.notification-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+.notification-btn:hover {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--color-danger);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.6rem;
+  padding: 1px 4px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 1.4;
+  font-weight: 700;
+  border: 2px solid var(--color-surface);
+  pointer-events: none;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 360px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  z-index: 300;
+  overflow: hidden;
+  animation: fadeDown 0.2s ease;
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.notification-header .btn-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition-fast);
+}
+.notification-header .btn-link:hover { color: var(--color-primary-hover); }
+
+.notification-list {
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border-light);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.notification-item:hover { background: var(--color-bg); }
+.notification-item.unread { background: #f5f3ff; }
+.notification-item.unread:hover { background: #ede9fe; }
+.notification-item:last-child { border-bottom: none; }
+
+.notification-item-icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+  padding-top: 2px;
+}
+
+.notification-item-content { flex: 1; min-width: 0; }
+
+.notification-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.notification-body {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.notification-time {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.notification-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+.notification-empty i { font-size: 2rem; margin-bottom: 8px; display: block; opacity: 0.4; }
+.notification-empty p { font-size: 0.875rem; margin: 0; }
