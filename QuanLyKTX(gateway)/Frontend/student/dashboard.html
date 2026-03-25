@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Sinh Viên - Quản Lý Ký Túc Xá</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="layout-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-university"></i>
+                    Quản Lý KTX
+                </div>
+                <div class="sidebar-subtitle">Hệ thống quản lý ký túc xá</div>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">Sinh viên</div>
+                    <div class="user-role">Sinh viên</div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Tổng quan</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="dashboard.html" class="nav-link active">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Thông tin cá nhân</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="profile.html" class="nav-link">
+                                <i class="fas fa-user"></i>
+                                Hồ sơ cá nhân
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="room.html" class="nav-link">
+                                <i class="fas fa-door-open"></i>
+                                Phòng ở
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="contract.html" class="nav-link">
+                                <i class="fas fa-file-contract"></i>
+                                Hợp đồng
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Tài chính</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="bills.html" class="nav-link">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                Hóa đơn
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="payments.html" class="nav-link">
+                                <i class="fas fa-credit-card"></i>
+                                Thanh toán
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="fees.html" class="nav-link">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Bảng giá phí
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Dịch vụ</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="services.html" class="nav-link">
+                                <i class="fas fa-concierge-bell"></i>
+                                Dịch vụ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="requests.html" class="nav-link">
+                                <i class="fas fa-clipboard-list"></i>
+                                Yêu cầu
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Học tập & Rèn luyện</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="discipline-scores.html" class="nav-link">
+                                <i class="fas fa-star"></i>
+                                Điểm rèn luyện
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="violations.html" class="nav-link">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Kỷ luật
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Hệ thống</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Đăng xuất
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="header-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="header-title">Dashboard Sinh Viên</h1>
+                </div>
+                <div class="header-right">
+                    <div class="header-notifications">
+                        <i class="fas fa-bell header-icon"></i>
+                        <span class="notification-badge">2</span>
+                    </div>
+                    <i class="fas fa-user-circle header-icon"></i>
+                </div>
+            </header>
+            
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <ul class="breadcrumb-list">
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ul>
+            </nav>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Welcome Message -->
+                <div class="card">
+                    <div class="card-body">
+                        <h2>Chào mừng, <span id="studentName">Sinh viên</span>!</h2>
+                        <p class="text-muted">Đây là tổng quan về thông tin ký túc xá của bạn.</p>
+                    </div>
+                </div>
+                
+                <!-- Student Info Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card info">
+                        <div class="stat-icon info">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="stat-value" id="currentRoom">A101</div>
+                        <div class="stat-label">Phòng hiện tại</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-check"></i> Đang ở
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card danger">
+                        <div class="stat-icon danger">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="stat-value" id="unpaidBills">2</div>
+                        <div class="stat-label">Hóa đơn chưa thanh toán</div>
+                        <div class="stat-change negative">
+                            <i class="fas fa-exclamation"></i> Cần thanh toán
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card success">
+                        <div class="stat-icon success">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <div class="stat-value" id="activeContracts">1</div>
+                        <div class="stat-label">Hợp đồng đang hoạt động</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-check"></i> Có hiệu lực
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card warning">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-value" id="pendingRequests">3</div>
+                        <div class="stat-label">Yêu cầu đang chờ</div>
+                        <div class="stat-change">
+                            <i class="fas fa-clock"></i> Đang xử lý
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Bills -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            Hóa đơn gần đây
+                        </h3>
+                        <a href="bills.html" class="btn btn-outline btn-sm">Xem tất cả</a>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentBills">
+                            <!-- Recent bills will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notifications -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-bell"></i>
+                            Thông báo
+                        </h3>
+                        <a href="#" class="btn btn-outline btn-sm">Xem tất cả</a>
+                    </div>
+                    <div class="card-body">
+                        <div id="notifications">
+                            <!-- Notifications will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-bolt"></i>
+                            Thao tác nhanh
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="window.location.href='bills.html'">
+                                <i class="fas fa-file-invoice"></i>
+                                Xem hóa đơn
+                            </button>
+                            <button class="btn btn-success" onclick="window.location.href='payments.html'">
+                                <i class="fas fa-credit-card"></i>
+                                Thanh toán
+                            </button>
+                            <button class="btn btn-warning" onclick="window.location.href='requests.html'">
+                                <i class="fas fa-clipboard-list"></i>
+                                Tạo yêu cầu
+                            </button>
+                            <button class="btn btn-info" onclick="window.location.href='profile.html'">
+                                <i class="fas fa-user"></i>
+                                Cập nhật hồ sơ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Đang tải...</p>
+        </div>
+    </div>
+    
+    <script src="../js/config.js"></script>
+    <script src="../js/api-client.js"></script>
+    <script src="../js/student-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Vi Phạm - Officer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="layout-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-university"></i>
+                    Quản Lý KTX
+                </div>
+                <div class="sidebar-subtitle">Hệ thống quản lý ký túc xá</div>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">Officer</div>
+                    <div class="user-role">Nhân viên</div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Tổng quan</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="dashboard.html" class="nav-link">
+                                <i class="fas fa-chart-line"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Yêu cầu</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="registrations.html" class="nav-link">
+                                <i class="fas fa-clipboard-check"></i>
+                                Đơn đăng ký
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="change-requests.html" class="nav-link">
+                                <i class="fas fa-exchange-alt"></i>
+                                Chuyển phòng
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Nghiệp vụ</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="meter-readings.html" class="nav-link">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Chỉ số điện nước
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="violations.html" class="nav-link active">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Kỷ luật
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Báo cáo</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="reports.html" class="nav-link">
+                                <i class="fas fa-chart-bar"></i>
+                                Báo cáo tổng hợp
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Hệ thống</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Đăng xuất
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="header-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="header-title">Quản Lý Vi Phạm</h1>
+                </div>
+                <div class="header-right">
+                    <div class="header-notifications">
+                        <i class="fas fa-bell header-icon"></i>
+                    </div>
+                    <i class="fas fa-user-circle header-icon"></i>
+                </div>
+            </header>
+            
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <ul class="breadcrumb-list">
+                    <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Vi phạm</li>
+                </ul>
+            </nav>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Page Header -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Danh Sách Vi Phạm
+                        </h2>
+                        <button class="btn btn-primary" onclick="openViolationModal()">
+                            <i class="fas fa-plus"></i>
+                            Thêm vi phạm
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="filter-bar">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm vi phạm..." onkeyup="filterViolations()">
+                            </div>
+                            <select id="studentFilter" class="form-control" onchange="filterViolations()">
+                                <option value="">Tất cả sinh viên</option>
+                            </select>
+                            <select id="loaiViPhamFilter" class="form-control" onchange="filterViolations()">
+                                <option value="">Tất cả loại vi phạm</option>
+                                <option value="Vi phạm nội quy">Vi phạm nội quy</option>
+                                <option value="Vi phạm giờ giấc">Vi phạm giờ giấc</option>
+                                <option value="Vi phạm vệ sinh">Vi phạm vệ sinh</option>
+                                <option value="Vi phạm an ninh">Vi phạm an ninh</option>
+                                <option value="Vi phạm khác">Vi phạm khác</option>
+                            </select>
+                            <select id="statusFilter" class="form-control" onchange="filterViolations()">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="Chờ xử lý">Chờ xử lý</option>
+                                <option value="Đã xử lý">Đã xử lý</option>
+                                <option value="Đã hủy">Đã hủy</option>
+                            </select>
+                            <button class="btn btn-outline" onclick="resetFilters()">
+                                <i class="fas fa-redo"></i>
+                                Đặt lại
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Violations Table -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table table-striped table-hover" id="violationsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Mã VP</th>
+                                        <th>Sinh viên</th>
+                                        <th>Loại vi phạm</th>
+                                        <th>Mô tả</th>
+                                        <th>Ngày vi phạm</th>
+                                        <th>Mức phạt</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="violationsTableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            <div class="loading">
+                                                <div class="spinner"></div>
+                                                <p>Đang tải dữ liệu...</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="noDataMessage" class="text-center" style="display: none; padding: 2rem;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                            <p>Không có dữ liệu vi phạm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Violation Modal -->
+    <div class="modal" id="violationModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="modalTitleText">Thêm vi phạm</span>
+                </h3>
+                <button class="modal-close" onclick="closeViolationModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="violationForm">
+                    <input type="hidden" id="violationId" name="maViPham">
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="maSinhVien" class="form-label">
+                                    <i class="fas fa-user-graduate"></i>
+                                    Sinh viên *
+                                </label>
+                                <select id="maSinhVien" name="maSinhVien" class="form-control" required>
+                                    <option value="">Chọn sinh viên</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="loaiViPham" class="form-label">
+                                    <i class="fas fa-list"></i>
+                                    Loại vi phạm *
+                                </label>
+                                <select id="loaiViPham" name="loaiViPham" class="form-control" required>
+                                    <option value="">Chọn loại vi phạm</option>
+                                    <option value="Vi phạm nội quy">Vi phạm nội quy</option>
+                                    <option value="Vi phạm giờ giấc">Vi phạm giờ giấc</option>
+                                    <option value="Vi phạm vệ sinh">Vi phạm vệ sinh</option>
+                                    <option value="Vi phạm an ninh">Vi phạm an ninh</option>
+                                    <option value="Vi phạm khác">Vi phạm khác</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="ngayViPham" class="form-label">
+                                    <i class="fas fa-calendar"></i>
+                                    Ngày vi phạm *
+                                </label>
+                                <input type="date" id="ngayViPham" name="ngayViPham" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="mucPhat" class="form-label">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    Mức phạt (VNĐ) *
+                                </label>
+                                <input type="number" id="mucPhat" name="mucPhat" class="form-control" min="0" step="1000" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="trangThai" class="form-label">
+                                    <i class="fas fa-info-circle"></i>
+                                    Trạng thái *
+                                </label>
+                                <select id="trangThai" name="trangThai" class="form-control" required>
+                                    <option value="Chưa xử lý">Chưa xử lý</option>
+                                    <option value="Chờ xử lý">Chờ xử lý</option>
+                                    <option value="Đã xử lý">Đã xử lý</option>
+                                    <option value="Đã hủy">Đã hủy</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="moTa" class="form-label">
+                            <i class="fas fa-align-left"></i>
+                            Mô tả vi phạm *
+                        </label>
+                        <textarea id="moTa" name="moTa" class="form-control" rows="4" required placeholder="Nhập mô tả chi tiết về vi phạm"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ghiChu" class="form-label">
+                            <i class="fas fa-sticky-note"></i>
+                            Ghi chú
+                        </label>
+                        <textarea id="ghiChu" name="ghiChu" class="form-control" rows="2" placeholder="Nhập ghi chú (nếu có)"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeViolationModal()">
+                    <i class="fas fa-times"></i>
+                    Hủy
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveViolation()">
+                    <i class="fas fa-save"></i>
+                    <span id="saveButtonText">Lưu</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Đang tải...</p>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api-client.js"></script>
+    <script src="../js/api-helper.js"></script>
+    <script src="../js/officer-violations.js"></script>
+</body>
+</html>
+

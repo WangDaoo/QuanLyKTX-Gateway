@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cấu Hình Phí - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="layout-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo"><i class="fas fa-university"></i> Quản Lý KTX</div>
+                <div class="sidebar-subtitle">Hệ thống quản lý ký túc xá</div>
+            </div>
+            <div class="sidebar-user">
+                <div class="user-avatar"><i class="fas fa-user"></i></div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">Admin</div>
+                    <div class="user-role" id="userRole">Quản trị viên</div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Tổng quan</div>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Quản lý</div>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="buildings.html" class="nav-link"><i class="fas fa-building"></i> Tòa nhà</a></li>
+                        <li class="nav-item"><a href="rooms.html" class="nav-link"><i class="fas fa-door-open"></i> Phòng</a></li>
+                        <li class="nav-item"><a href="beds.html" class="nav-link"><i class="fas fa-bed"></i> Giường</a></li>
+                        <li class="nav-item"><a href="students.html" class="nav-link"><i class="fas fa-user-graduate"></i> Sinh viên</a></li>
+                        <li class="nav-item"><a href="contracts.html" class="nav-link"><i class="fas fa-file-contract"></i> Hợp đồng</a></li>
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Tài chính</div>
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="bills.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Hóa đơn</a></li>
+                        <li class="nav-item"><a href="receipts.html" class="nav-link"><i class="fas fa-receipt"></i> Biên lai</a></li>
+                        <li class="nav-item"><a href="fees.html" class="nav-link"><i class="fas fa-coins"></i> Mức phí</a></li>
+                        <li class="nav-item"><a href="price-tiers.html" class="nav-link"><i class="fas fa-layer-group"></i> Bậc giá điện nước</a></li>
+                        <li class="nav-item"><a href="fee-configs.html" class="nav-link active"><i class="fas fa-sliders-h"></i> Cấu hình phí</a></li>
+                        <li class="nav-item"><a href="meter-readings.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Chỉ số điện nước</a></li>
+                        <li class="nav-item"><a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> Báo cáo</a></li>
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Hệ thống</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="users.html" class="nav-link">
+                                <i class="fas fa-users-cog"></i>
+                                Tài khoản
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="change-password.html" class="nav-link">
+                                <i class="fas fa-key"></i>
+                                Đổi mật khẩu
+                            </a>
+                        </li>
+                        <li class="nav-item"><a href="registrations.html" class="nav-link"><i class="fas fa-clipboard-check"></i> Đăng ký</a></li>
+                        <li class="nav-item"><a href="violations.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Kỷ luật</a></li>
+                        <li class="nav-item"><a href="discipline-scores.html" class="nav-link"><i class="fas fa-star"></i> Điểm rèn luyện</a></li>
+                        <li class="nav-item"><a href="overdue-notices.html" class="nav-link"><i class="fas fa-bell"></i> Thông báo quá hạn</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="header-menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <h1 class="header-title">Cấu Hình Phí</h1>
+                </div>
+                <div class="header-right">
+                    <div class="header-notifications"><i class="fas fa-bell header-icon"></i><span class="notification-badge">0</span></div>
+                    <i class="fas fa-user-circle header-icon"></i>
+                </div>
+            </header>
+
+            <nav class="breadcrumb">
+                <ul class="breadcrumb-list">
+                    <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Cấu hình phí</li>
+                </ul>
+            </nav>
+
+            <div class="content-area">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-sliders-h"></i> Danh Sách Cấu Hình</h2>
+                        <button class="btn btn-primary" onclick="openConfigModal()"><i class="fas fa-plus"></i> Thêm cấu hình</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="filter-bar">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo loại..." onkeyup="filterConfigs()">
+                            </div>
+                            <select id="typeFilter" class="form-control" onchange="filterConfigs()">
+                                <option value="">Tất cả loại</option>
+                                <option value="Dien">Điện</option>
+                                <option value="Nuoc">Nước</option>
+                            </select>
+                            <select id="statusFilter" class="form-control" onchange="filterConfigs()">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="true">Hoạt động</option>
+                                <option value="false">Ngừng hoạt động</option>
+                            </select>
+                            <button class="btn btn-outline" onclick="resetFilters()"><i class="fas fa-redo"></i> Đặt lại</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Mã</th>
+                                        <th>Loại</th>
+                                        <th>Mức tối thiểu</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="configsTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center">
+                                            <div class="loading"><div class="spinner"></div><p>Đang tải dữ liệu...</p></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="noDataMessage" class="text-center" style="display:none; padding:2rem;">
+                            <i class="fas fa-sliders-h" style="font-size:3rem; color:#ccc; margin-bottom:1rem;"></i>
+                            <p>Không có cấu hình phí</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="configModal">
+        <div class="modal-content modal-medium">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-sliders-h"></i> <span id="modalTitleText">Thêm cấu hình</span></h3>
+                <button class="modal-close" onclick="closeConfigModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="configForm">
+                    <input type="hidden" id="configId">
+                    <div class="form-group">
+                        <label class="form-label" for="loai"><i class="fas fa-bolt"></i> Loại *</label>
+                        <select id="loai" class="form-control" required>
+                            <option value="">Chọn loại</option>
+                            <option value="Dien">Điện</option>
+                            <option value="Nuoc">Nước</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mucToiThieu"><i class="fas fa-tachometer-alt"></i> Mức tối thiểu *</label>
+                        <input type="number" id="mucToiThieu" class="form-control" min="0" step="1" required>
+                    </div>
+                    <div class="form-group form-switch">
+                        <label class="form-label" for="trangThai"><i class="fas fa-toggle-on"></i> Trạng thái</label>
+                        <label class="switch">
+                            <input type="checkbox" id="trangThai" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span id="statusText">Hoạt động</span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfigModal()"><i class="fas fa-times"></i> Hủy</button>
+                <button class="btn btn-primary" onclick="saveConfig()"><i class="fas fa-save"></i> Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><p>Đang tải...</p></div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api-client.js"></script>
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/admin-fee-configs.js"></script>
+</body>
+</html>

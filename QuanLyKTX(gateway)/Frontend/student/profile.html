@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Cá Nhân - Sinh Viên</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="layout-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-university"></i>
+                    Quản Lý KTX
+                </div>
+                <div class="sidebar-subtitle">Hệ thống quản lý ký túc xá</div>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">Sinh viên</div>
+                    <div class="user-role">Sinh viên</div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Tổng quan</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="dashboard.html" class="nav-link">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Thông tin cá nhân</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="profile.html" class="nav-link active">
+                                <i class="fas fa-user"></i>
+                                Hồ sơ cá nhân
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="room.html" class="nav-link">
+                                <i class="fas fa-door-open"></i>
+                                Phòng ở
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="contract.html" class="nav-link">
+                                <i class="fas fa-file-contract"></i>
+                                Hợp đồng
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Tài chính</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="bills.html" class="nav-link">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                Hóa đơn
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="payments.html" class="nav-link">
+                                <i class="fas fa-credit-card"></i>
+                                Thanh toán
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="fees.html" class="nav-link">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Bảng giá phí
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Dịch vụ</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="services.html" class="nav-link">
+                                <i class="fas fa-concierge-bell"></i>
+                                Dịch vụ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="requests.html" class="nav-link">
+                                <i class="fas fa-clipboard-list"></i>
+                                Yêu cầu
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Học tập & Rèn luyện</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="discipline-scores.html" class="nav-link">
+                                <i class="fas fa-star"></i>
+                                Điểm rèn luyện
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="violations.html" class="nav-link">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Kỷ luật
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Hệ thống</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Đăng xuất
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="header-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="header-title">Hồ Sơ Cá Nhân</h1>
+                </div>
+                <div class="header-right">
+                    <div class="header-notifications">
+                        <i class="fas fa-bell header-icon"></i>
+                    </div>
+                    <i class="fas fa-user-circle header-icon"></i>
+                </div>
+            </header>
+            
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <ul class="breadcrumb-list">
+                    <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Hồ sơ cá nhân</li>
+                </ul>
+            </nav>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Profile Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-user"></i>
+                            Thông Tin Cá Nhân
+                        </h3>
+                        <button class="btn btn-sm btn-primary" onclick="openEditModal()">
+                            <i class="fas fa-edit"></i>
+                            Chỉnh sửa
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <label><i class="fas fa-id-card"></i> Mã sinh viên:</label>
+                                    <span id="mssv">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label><i class="fas fa-user"></i> Họ và tên:</label>
+                                    <span id="hoTen">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label><i class="fas fa-calendar"></i> Ngày sinh:</label>
+                                    <span id="ngaySinh">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label><i class="fas fa-venus-mars"></i> Giới tính:</label>
+                                    <span id="gioiTinh">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label><i class="fas fa-phone"></i> Số điện thoại:</label>
+                                    <span id="soDienThoai">-</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <label><i class="fas fa-envelope"></i> Email:</label>
+                                    <span id="email">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label><i class="fas fa-map-marker-alt"></i> Địa chỉ:</label>
+                                    <span id="diaChi">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label><i class="fas fa-graduation-cap"></i> Khoa:</label>
+                                    <span id="khoa">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label><i class="fas fa-book"></i> Ngành:</label>
+                                    <span id="nganh">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label><i class="fas fa-calendar-check"></i> Năm học:</label>
+                                    <span id="namHoc">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Info Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-key"></i>
+                            Thông Tin Tài Khoản
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <label><i class="fas fa-user-circle"></i> Tên đăng nhập:</label>
+                                    <span id="tenDangNhap">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label><i class="fas fa-shield-alt"></i> Vai trò:</label>
+                                    <span class="badge badge-info">Sinh viên</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <button class="btn btn-warning" onclick="openChangePasswordModal()">
+                                        <i class="fas fa-key"></i>
+                                        Đổi mật khẩu
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-edit"></i>
+                    Chỉnh Sửa Hồ Sơ
+                </h3>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <input type="hidden" id="maSinhVien" name="maSinhVien">
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="editHoTen" class="form-label">
+                                    <i class="fas fa-user"></i>
+                                    Họ và tên *
+                                </label>
+                                <input type="text" id="editHoTen" name="hoTen" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="editNgaySinh" class="form-label">
+                                    <i class="fas fa-calendar"></i>
+                                    Ngày sinh *
+                                </label>
+                                <input type="date" id="editNgaySinh" name="ngaySinh" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="editGioiTinh" class="form-label">
+                                    <i class="fas fa-venus-mars"></i>
+                                    Giới tính *
+                                </label>
+                                <select id="editGioiTinh" name="gioiTinh" class="form-control" required>
+                                    <option value="">Chọn giới tính</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="editSoDienThoai" class="form-label">
+                                    <i class="fas fa-phone"></i>
+                                    Số điện thoại *
+                                </label>
+                                <input type="tel" id="editSoDienThoai" name="soDienThoai" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editEmail" class="form-label">
+                            <i class="fas fa-envelope"></i>
+                            Email *
+                        </label>
+                        <input type="email" id="editEmail" name="email" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editDiaChi" class="form-label">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Địa chỉ *
+                        </label>
+                        <textarea id="editDiaChi" name="diaChi" class="form-control" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="editKhoa" class="form-label">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    Khoa
+                                </label>
+                                <input type="text" id="editKhoa" name="khoa" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="editNganh" class="form-label">
+                                    <i class="fas fa-book"></i>
+                                    Ngành
+                                </label>
+                                <input type="text" id="editNganh" name="nganh" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i>
+                    Hủy
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveProfile()">
+                    <i class="fas fa-save"></i>
+                    Lưu thay đổi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal" id="changePasswordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-key"></i>
+                    Đổi Mật Khẩu
+                </h3>
+                <button class="modal-close" onclick="closeChangePasswordModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label for="currentPassword" class="form-label">
+                            <i class="fas fa-lock"></i>
+                            Mật khẩu hiện tại *
+                        </label>
+                        <input type="text" id="currentPassword" name="currentPassword" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword" class="form-label">
+                            <i class="fas fa-key"></i>
+                            Mật khẩu mới *
+                        </label>
+                        <input type="text" id="newPassword" name="newPassword" class="form-control" required minlength="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">
+                            <i class="fas fa-check-circle"></i>
+                            Xác nhận mật khẩu mới *
+                        </label>
+                        <input type="text" id="confirmPassword" name="confirmPassword" class="form-control" required minlength="6">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeChangePasswordModal()">
+                    <i class="fas fa-times"></i>
+                    Hủy
+                </button>
+                <button type="button" class="btn btn-primary" onclick="savePassword()">
+                    <i class="fas fa-save"></i>
+                    Đổi mật khẩu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Đang tải...</p>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api-client.js"></script>
+    <script src="../js/student-profile.js"></script>
+</body>
+</html>
+

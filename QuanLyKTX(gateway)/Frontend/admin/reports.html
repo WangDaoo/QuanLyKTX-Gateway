@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="layout-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-university"></i>
+                    Quản Lý KTX
+                </div>
+                <div class="sidebar-subtitle">Hệ thống quản lý ký túc xá</div>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">Admin</div>
+                    <div class="user-role" id="userRole">Quản trị viên</div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Tổng quan</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="dashboard.html" class="nav-link">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Quản lý</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="buildings.html" class="nav-link">
+                                <i class="fas fa-building"></i>
+                                Tòa nhà
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="rooms.html" class="nav-link">
+                                <i class="fas fa-door-open"></i>
+                                Phòng
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="beds.html" class="nav-link">
+                                <i class="fas fa-bed"></i>
+                                Giường
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="students.html" class="nav-link">
+                                <i class="fas fa-user-graduate"></i>
+                                Sinh viên
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="contracts.html" class="nav-link">
+                                <i class="fas fa-file-contract"></i>
+                                Hợp đồng
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Tài chính</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="bills.html" class="nav-link">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                Hóa đơn
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="receipts.html" class="nav-link">
+                                <i class="fas fa-receipt"></i>
+                                Biên lai
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="fees.html" class="nav-link">
+                                <i class="fas fa-coins"></i>
+                                Mức phí
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="price-tiers.html" class="nav-link">
+                                <i class="fas fa-layer-group"></i>
+                                Bậc giá điện nước
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="fee-configs.html" class="nav-link">
+                                <i class="fas fa-sliders-h"></i>
+                                Cấu hình phí
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="meter-readings.html" class="nav-link">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Chỉ số điện nước
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="reports.html" class="nav-link active">
+                                <i class="fas fa-chart-bar"></i>
+                                Báo cáo
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Hệ thống</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="users.html" class="nav-link">
+                                <i class="fas fa-users-cog"></i>
+                                Tài khoản
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="change-password.html" class="nav-link">
+                                <i class="fas fa-key"></i>
+                                Đổi mật khẩu
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="registrations.html" class="nav-link">
+                                <i class="fas fa-clipboard-check"></i>
+                                Đăng ký
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="violations.html" class="nav-link">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Kỷ luật
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="discipline-scores.html" class="nav-link">
+                                <i class="fas fa-star"></i>
+                                Điểm rèn luyện
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="change-requests.html" class="nav-link">
+                                <i class="fas fa-exchange-alt"></i>
+                                Yêu cầu chuyển phòng
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Đăng xuất
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="header-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="header-title">Báo Cáo</h1>
+                </div>
+                <div class="header-right">
+                    <div class="header-notifications">
+                        <i class="fas fa-bell header-icon"></i>
+                        <span class="notification-badge">0</span>
+                    </div>
+                    <i class="fas fa-user-circle header-icon"></i>
+                </div>
+            </header>
+            
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <ul class="breadcrumb-list">
+                    <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Báo cáo</li>
+                </ul>
+            </nav>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Filter Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-filter"></i>
+                            Lọc báo cáo
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="filter-bar">
+                            <select id="reportType" class="form-control" onchange="onReportTypeChange()">
+                                <option value="occupancy">Tỷ lệ lấp đầy</option>
+                                <option value="revenue">Doanh thu</option>
+                                <option value="debt">Công nợ</option>
+                                <option value="electricity-water">Điện nước</option>
+                                <option value="violations">Kỷ luật</option>
+                            </select>
+                            <select id="monthFilter" class="form-control">
+                                <option value="">Chọn tháng</option>
+                                <option value="1">Tháng 1</option>
+                                <option value="2">Tháng 2</option>
+                                <option value="3">Tháng 3</option>
+                                <option value="4">Tháng 4</option>
+                                <option value="5">Tháng 5</option>
+                                <option value="6">Tháng 6</option>
+                                <option value="7">Tháng 7</option>
+                                <option value="8">Tháng 8</option>
+                                <option value="9">Tháng 9</option>
+                                <option value="10">Tháng 10</option>
+                                <option value="11">Tháng 11</option>
+                                <option value="12">Tháng 12</option>
+                            </select>
+                            <input type="number" id="yearFilter" class="form-control" placeholder="Năm" min="2020" max="2100">
+                            <button class="btn btn-primary" onclick="loadReport()">
+                                <i class="fas fa-search"></i>
+                                Xem báo cáo
+                            </button>
+                            <button class="btn btn-success" onclick="generateMonthlyBills()">
+                                <i class="fas fa-file-invoice"></i>
+                                Tạo hóa đơn tháng
+                            </button>
+                            <button class="btn btn-info" onclick="openCalculateModal('electricity')">
+                                <i class="fas fa-bolt"></i>
+                                Tính tiền điện
+                            </button>
+                            <button class="btn btn-info" onclick="openCalculateModal('water')">
+                                <i class="fas fa-tint"></i>
+                                Tính tiền nước
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Content -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title" id="reportTitle">
+                            <i class="fas fa-chart-bar"></i>
+                            Báo Cáo Tỷ Lệ Lấp Đầy
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="reportContent">
+                            <div class="text-center" style="padding: 3rem;">
+                                <i class="fas fa-chart-line" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                                <p>Chọn loại báo cáo và nhấn "Xem báo cáo" để xem dữ liệu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Calculate Modal -->
+    <div class="modal" id="calculateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="calculateModalTitle">
+                    <i class="fas fa-calculator"></i>
+                    <span id="calculateModalTitleText">Tính tiền</span>
+                </h3>
+                <button class="modal-close" onclick="closeCalculateModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="calculateForm">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="calculateAmount" class="form-label">
+                                    <i class="fas fa-hashtag"></i>
+                                    <span id="calculateAmountLabel">Số kWh</span> *
+                                </label>
+                                <input type="number" id="calculateAmount" class="form-control" min="0" step="1" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="calculateMonth" class="form-label">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    Tháng *
+                                </label>
+                                <select id="calculateMonth" class="form-control" required>
+                                    <option value="">Chọn tháng</option>
+                                    <option value="1">Tháng 1</option>
+                                    <option value="2">Tháng 2</option>
+                                    <option value="3">Tháng 3</option>
+                                    <option value="4">Tháng 4</option>
+                                    <option value="5">Tháng 5</option>
+                                    <option value="6">Tháng 6</option>
+                                    <option value="7">Tháng 7</option>
+                                    <option value="8">Tháng 8</option>
+                                    <option value="9">Tháng 9</option>
+                                    <option value="10">Tháng 10</option>
+                                    <option value="11">Tháng 11</option>
+                                    <option value="12">Tháng 12</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="calculateYear" class="form-label">
+                            <i class="fas fa-calendar"></i>
+                            Năm *
+                        </label>
+                        <input type="number" id="calculateYear" class="form-control" min="2020" max="2100" required>
+                    </div>
+                    <div class="form-group" id="calculateResultGroup" style="display: none;">
+                        <label class="form-label">
+                            <i class="fas fa-money-bill-wave"></i>
+                            Kết quả
+                        </label>
+                        <div class="alert alert-info" id="calculateResult">
+                            <strong id="calculateResultText">0 VNĐ</strong>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCalculateModal()">
+                    <i class="fas fa-times"></i>
+                    Đóng
+                </button>
+                <button type="button" class="btn btn-primary" onclick="calculateAmount()">
+                    <i class="fas fa-calculator"></i>
+                    Tính toán
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Đang tải...</p>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api-client.js"></script>
+    <script src="../js/admin-common.js"></script>
+    <script src="../js/admin-reports.js"></script>
+</body>
+</html>
