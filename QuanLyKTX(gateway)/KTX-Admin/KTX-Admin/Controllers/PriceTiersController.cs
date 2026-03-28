@@ -165,12 +165,7 @@ namespace KTX_Admin.Controllers
 						TuSo = reader.IsDBNull("TuSo") ? null : reader.GetInt32("TuSo"),
 						DenSo = reader.IsDBNull("DenSo") ? null : reader.GetInt32("DenSo"),
 						DonGia = reader.GetDecimal("DonGia"),
-						TrangThai = reader.GetBoolean("TrangThai"),
-						IsDeleted = reader.GetBoolean("IsDeleted"),
-						NgayTao = reader.GetDateTime("NgayTao"),
-						NguoiTao = reader.IsDBNull("NguoiTao") ? null : reader.GetString("NguoiTao"),
-						NgayCapNhat = reader.IsDBNull("NgayCapNhat") ? (DateTime?)null : reader.GetDateTime("NgayCapNhat"),
-						NguoiCapNhat = reader.IsDBNull("NguoiCapNhat") ? null : reader.GetString("NguoiCapNhat")
+						TrangThai = reader.GetBoolean("TrangThai")
 					};
 					return Ok(new { success = true, data = updatedPriceTier, message = "Cập nhật bậc giá thành công" });
 				}

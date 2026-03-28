@@ -180,45 +180,44 @@ namespace KTX_Admin.Controllers
                 command.Parameters.AddWithValue("@DiaChi", request.DiaChi ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@MaPhong", request.MaPhong ?? (object)DBNull.Value);
 
-                var affectedRows = await command.ExecuteScalarAsync();
-                if (Convert.ToInt32(affectedRows) > 0)
-                {
-                    // Fetch lại student sau khi update để trả về data
-                    using var getCommand = new SqlCommand("sp_SinhVien_GetById", connection)
-                    {
-                        CommandType = CommandType.StoredProcedure
-                    };
-                    getCommand.Parameters.AddWithValue("@MaSinhVien", id);
+                await command.ExecuteNonQueryAsync();
 
-                    using var reader = await getCommand.ExecuteReaderAsync();
-                    if (await reader.ReadAsync())
+                // Fetch lại student sau khi update để trả về data
+                using var getCommand = new SqlCommand("sp_SinhVien_GetById", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                getCommand.Parameters.AddWithValue("@MaSinhVien", id);
+
+                using var reader = await getCommand.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    var updatedStudent = new SinhVien
                     {
-                        var updatedStudent = new SinhVien
-                        {
-                            MaSinhVien = reader.GetInt32("MaSinhVien"),
-                            HoTen = reader.GetString("HoTen"),
-                            MSSV = reader.GetString("MSSV"),
-                            Lop = reader.GetString("Lop"),
-                            Khoa = reader.GetString("Khoa"),
-                            NgaySinh = reader.IsDBNull("NgaySinh") ? (DateTime?)null : reader.GetDateTime("NgaySinh"),
-                            GioiTinh = reader.IsDBNull("GioiTinh") ? null : reader.GetString("GioiTinh"),
-                            SDT = reader.IsDBNull("SDT") ? null : reader.GetString("SDT"),
-                            Email = reader.IsDBNull("Email") ? null : reader.GetString("Email"),
-                            DiaChi = reader.IsDBNull("DiaChi") ? null : reader.GetString("DiaChi"),
-                            AnhDaiDien = reader.IsDBNull("AnhDaiDien") ? null : reader.GetString("AnhDaiDien"),
-                            TrangThai = reader.GetBoolean("TrangThai"),
-                            MaPhong = reader.IsDBNull("MaPhong") ? null : reader.GetInt32("MaPhong"),
-                            IsDeleted = reader.GetBoolean("IsDeleted"),
-                            NgayTao = reader.GetDateTime("NgayTao"),
-                            NguoiTao = reader.IsDBNull("NguoiTao") ? null : reader.GetString("NguoiTao"),
-                            NgayCapNhat = reader.IsDBNull("NgayCapNhat") ? (DateTime?)null : reader.GetDateTime("NgayCapNhat"),
-                            NguoiCapNhat = reader.IsDBNull("NguoiCapNhat") ? null : reader.GetString("NguoiCapNhat"),
-                            SoPhong = reader.IsDBNull("SoPhong") ? null : reader.GetString("SoPhong"),
-                            TenToaNha = reader.IsDBNull("TenToaNha") ? null : reader.GetString("TenToaNha")
-                        };
-                        return Ok(new { success = true, data = updatedStudent, message = "Cập nhật sinh viên thành công" });
-                    }
+                        MaSinhVien = reader.GetInt32("MaSinhVien"),
+                        HoTen = reader.GetString("HoTen"),
+                        MSSV = reader.GetString("MSSV"),
+                        Lop = reader.GetString("Lop"),
+                        Khoa = reader.GetString("Khoa"),
+                        NgaySinh = reader.IsDBNull("NgaySinh") ? (DateTime?)null : reader.GetDateTime("NgaySinh"),
+                        GioiTinh = reader.IsDBNull("GioiTinh") ? null : reader.GetString("GioiTinh"),
+                        SDT = reader.IsDBNull("SDT") ? null : reader.GetString("SDT"),
+                        Email = reader.IsDBNull("Email") ? null : reader.GetString("Email"),
+                        DiaChi = reader.IsDBNull("DiaChi") ? null : reader.GetString("DiaChi"),
+                        AnhDaiDien = reader.IsDBNull("AnhDaiDien") ? null : reader.GetString("AnhDaiDien"),
+                        TrangThai = reader.GetBoolean("TrangThai"),
+                        MaPhong = reader.IsDBNull("MaPhong") ? null : reader.GetInt32("MaPhong"),
+                        IsDeleted = reader.GetBoolean("IsDeleted"),
+                        NgayTao = reader.GetDateTime("NgayTao"),
+                        NguoiTao = reader.IsDBNull("NguoiTao") ? null : reader.GetString("NguoiTao"),
+                        NgayCapNhat = reader.IsDBNull("NgayCapNhat") ? (DateTime?)null : reader.GetDateTime("NgayCapNhat"),
+                        NguoiCapNhat = reader.IsDBNull("NguoiCapNhat") ? null : reader.GetString("NguoiCapNhat"),
+                        SoPhong = reader.IsDBNull("SoPhong") ? null : reader.GetString("SoPhong"),
+                        TenToaNha = reader.IsDBNull("TenToaNha") ? null : reader.GetString("TenToaNha")
+                    };
+                    return Ok(new { success = true, data = updatedStudent, message = "Cập nhật sinh viên thành công" });
                 }
+
                 return NotFound(new { success = false, message = "Không tìm thấy sinh viên" });
             }
             catch (Exception ex)
@@ -242,8 +241,8 @@ namespace KTX_Admin.Controllers
 
                 command.Parameters.AddWithValue("@MaSinhVien", id);
 
-                var affectedRows = await command.ExecuteScalarAsync();
-                if (Convert.ToInt32(affectedRows) > 0) return Ok(new { success = true, message = "Xóa sinh viên thành công" });
+                var affectedRows = await command.ExecuteNonQueryAsync();
+                if (affectedRows > 0) return Ok(new { success = true, message = "Xóa sinh viên thành công" });
                 return NotFound(new { success = false, message = "Không tìm thấy sinh viên" });
             }
             catch (Exception ex)
