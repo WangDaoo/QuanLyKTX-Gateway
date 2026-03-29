@@ -1,0 +1,3757 @@
+{
+  "info": {
+    "name": "QuanLyKTX - Hệ Thống Quản Lý Ký Túc Xá",
+    "description": "Bộ Postman Collection đầy đủ cho hệ thống Quản Lý KTX với Gateway, Admin API và User API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TenDangNhap\": \"admin\",\n  \"MatKhau\": \"admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/auth/login",
+              "host": ["{{gateway}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login thành công', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.token).to.be.a('string');",
+                  "    ",
+                  "    // Lưu token vào environment",
+                  "    pm.environment.set('token', jsonData.token);",
+                  "    pm.environment.set('user_role', jsonData.user.VaiTro);",
+                  "    pm.environment.set('user_id', jsonData.user.MaTaiKhoan);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Officer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TenDangNhap\": \"officer\",\n  \"MatKhau\": \"officer@123\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/auth/login",
+              "host": ["{{gateway}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TenDangNhap\": \"student\",\n  \"MatKhau\": \"student@123\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/auth/login",
+              "host": ["{{gateway}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Register Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TenDangNhap\": \"newuser\",\n  \"MatKhau\": \"password123\",\n  \"HoTen\": \"New User\",\n  \"Email\": \"newuser@email.com\",\n  \"VaiTro\": \"Officer\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/auth/register",
+              "host": ["{{gateway}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200/201', function () {",
+                  "    pm.response.to.have.status([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Users (Admin Only)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/auth/users",
+              "host": ["{{gateway}}"],
+              "path": ["auth", "users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success and data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"OldPassword\": \"oldpassword\",\n  \"NewPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/auth/change-password",
+              "host": ["{{gateway}}"],
+              "path": ["auth", "change-password"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get User by ID (Admin Only)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/auth/users/1",
+              "host": ["{{gateway}}"],
+              "path": ["auth", "users", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success and data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update User (Admin Only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"HoTen\": \"Nguyễn Văn A\",\n  \"Email\": \"nguyenvana@email.com\",\n  \"VaiTro\": \"Officer\",\n  \"TrangThai\": true,\n  \"MaSinhVien\": null\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/auth/users/1",
+              "host": ["{{gateway}}"],
+              "path": ["auth", "users", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete User (Admin Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/auth/users/1",
+              "host": ["{{gateway}}"],
+              "path": ["auth", "users", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reset Password (Admin Only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"NewPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/auth/users/1/reset-password",
+              "host": ["{{gateway}}"],
+              "path": ["auth", "users", "1", "reset-password"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lock/Unlock User (Admin Only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"IsLocked\": false\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/auth/users/1/lock",
+              "host": ["{{gateway}}"],
+              "path": ["auth", "users", "1", "lock"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏢 Admin - Buildings (Tòa Nhà)",
+      "item": [
+        {
+          "name": "Get All Buildings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/buildings",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "buildings"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success and data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Building by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/buildings/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "buildings", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Building",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TenToaNha\": \"Tòa B\",\n  \"DiaChi\": \"456 Đường XYZ\",\n  \"SoTang\": 4,\n  \"TrangThai\": true,\n  \"MoTa\": \"Tòa nữ\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/buildings",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "buildings"]
+            }
+          }
+        },
+        {
+          "name": "Update Building",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TenToaNha\": \"Tòa A - Cập nhật\",\n  \"DiaChi\": \"123 Đường ABC - Mới\",\n  \"SoTang\": 6,\n  \"TrangThai\": true,\n  \"MoTa\": \"Đã nâng cấp\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/buildings/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "buildings", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "    if (jsonData.message) {",
+                  "        pm.expect(jsonData.message).to.be.a('string');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Building",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/buildings/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "buildings", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏠 Admin - Rooms (Phòng)",
+      "item": [
+        {
+          "name": "Get All Rooms",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/rooms",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "rooms"]
+            }
+          }
+        },
+        {
+          "name": "Get Room by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/rooms/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "rooms", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"SoPhong\": \"A102\",\n  \"MaToaNha\": 1,\n  \"SoGiuong\": 4,\n  \"LoaiPhong\": \"Phòng 4 người\",\n  \"GiaPhong\": 1500000,\n  \"TrangThai\": \"Trống\",\n  \"MoTa\": \"Phòng tầng 1\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/rooms",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "rooms"]
+            }
+          }
+        },
+        {
+          "name": "Update Room",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"SoPhong\": \"A102\",\n  \"MaToaNha\": 1,\n  \"SoGiuong\": 6,\n  \"LoaiPhong\": \"Phòng 6 người\",\n  \"GiaPhong\": 2000000,\n  \"TrangThai\": \"Trống\",\n  \"MoTa\": \"Phòng đã nâng cấp\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/rooms/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "rooms", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "    if (jsonData.message) {",
+                  "        pm.expect(jsonData.message).to.be.a('string');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Room",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/rooms/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "rooms", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Empty Rooms",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/rooms/empty",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "rooms", "empty"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success and data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🛏️ Admin - Beds (Giường)",
+      "item": [
+        {
+          "name": "Get All Beds",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/beds",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "beds"]
+            }
+          }
+        },
+        {
+          "name": "Get Bed by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/beds/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "beds", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Bed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"SoGiuong\": \"2\",\n  \"MaPhong\": 1,\n  \"TrangThai\": \"Trống\",\n  \"MoTa\": \"Giường dưới\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/beds",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "beds"]
+            }
+          }
+        },
+        {
+          "name": "Update Bed",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"SoGiuong\": \"2\",\n  \"MaPhong\": 1,\n  \"TrangThai\": \"Đã có người\",\n  \"MoTa\": \"Giường đã được sử dụng\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/beds/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "beds", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Bed",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/beds/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "beds", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💰 Admin - Fees (Mức Phí)",
+      "item": [
+        {
+          "name": "Get All Fees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/fees",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "fees"]
+            }
+          }
+        },
+        {
+          "name": "Get Fee by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/fees/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "fees", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Fee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TenMucPhi\": \"Phí điện\",\n  \"LoaiPhi\": \"Phí điện\",\n  \"GiaTien\": 3500,\n  \"DonVi\": \"VND/kWh\",\n  \"TrangThai\": true,\n  \"GhiChu\": \"Theo bậc thang\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/fees",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "fees"]
+            }
+          }
+        },
+        {
+          "name": "Update Fee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TenMucPhi\": \"Phí điện - Cập nhật\",\n  \"LoaiPhi\": \"Phí điện\",\n  \"GiaTien\": 4000,\n  \"DonVi\": \"VND/kWh\",\n  \"TrangThai\": true,\n  \"GhiChu\": \"Giá mới 2024\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/fees/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "fees", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Fee",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/fees/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "fees", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Fees by Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Lấy danh sách mức phí theo loại phí",
+            "url": {
+              "raw": "{{gateway}}/admin/api/fees/by-type/Phí điện",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "fees", "by-type", "Phí điện"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success and data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "⚡ Admin - Meter Readings (Chỉ Số Điện Nước)",
+      "item": [
+        {
+          "name": "Get All Meter Readings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/meter-readings",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "meter-readings"]
+            }
+          }
+        },
+        {
+          "name": "Get Meter Reading by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/meter-readings/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "meter-readings", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Meter Reading",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaPhong\": 1,\n  \"Thang\": 1,\n  \"Nam\": 2024,\n  \"ChiSoDien\": 100,\n  \"ChiSoNuoc\": 50,\n  \"NguoiGhi\": \"admin\",\n  \"TrangThai\": \"Đã ghi\",\n  \"GhiChu\": \"Ghi chỉ số đầu tháng\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/meter-readings",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "meter-readings"]
+            }
+          }
+        },
+        {
+          "name": "Update Meter Reading",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaPhong\": 1,\n  \"Thang\": 1,\n  \"Nam\": 2024,\n  \"ChiSoDien\": 120,\n  \"ChiSoNuoc\": 55,\n  \"NguoiGhi\": \"admin\",\n  \"TrangThai\": \"Đã xác nhận\",\n  \"GhiChu\": \"Đã điều chỉnh\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/meter-readings/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "meter-readings", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Meter Reading",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/meter-readings/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "meter-readings", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Meter Readings by Room",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Lấy danh sách chỉ số điện nước theo phòng",
+            "url": {
+              "raw": "{{gateway}}/admin/api/meter-readings/by-room/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "meter-readings", "by-room", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success and data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Meter Readings by Month",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Lấy danh sách chỉ số điện nước theo tháng/năm",
+            "url": {
+              "raw": "{{gateway}}/admin/api/meter-readings/by-month/1/2024",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "meter-readings", "by-month", "1", "2024"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success and data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Import Excel Meter Readings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/meter-readings/import-excel",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "meter-readings", "import-excel"]
+            }
+          }
+        },
+        {
+          "name": "Download Excel Template",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/meter-readings/template",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "meter-readings", "template"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Admin - Students (Sinh Viên)",
+      "item": [
+        {
+          "name": "Get All Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/students",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "students"]
+            }
+          }
+        },
+        {
+          "name": "Get Student by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/students/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "students", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"HoTen\": \"Nguyễn Văn B\",\n  \"MSSV\": \"SV001\",\n  \"Lop\": \"CNTT02\",\n  \"Khoa\": \"Công nghệ thông tin\",\n  \"NgaySinh\": \"2001-01-01T00:00:00\",\n  \"GioiTinh\": \"Nữ\",\n  \"SDT\": \"0987654321\",\n  \"Email\": \"nguyenvanb@email.com\",\n  \"DiaChi\": \"123 Đường ABC\",\n  \"AnhDaiDien\": null,\n  \"MaPhong\": 1\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/students",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "students"]
+            }
+          }
+        },
+        {
+          "name": "Update Student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"HoTen\": \"Nguyễn Văn B - Updated\",\n  \"MSSV\": \"SV001\",\n  \"Lop\": \"CNTT03\",\n  \"Khoa\": \"Công nghệ thông tin\",\n  \"NgaySinh\": \"2001-01-01T00:00:00\",\n  \"GioiTinh\": \"Nam\",\n  \"SDT\": \"0987654322\",\n  \"Email\": \"nguyenvanb.updated@email.com\",\n  \"DiaChi\": \"123 Đường ABC\",\n  \"MaPhong\": 1\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/students/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "students", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Student",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/students/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "students", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Students by Room",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/students/by-room/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "students", "by-room", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Admin - Contracts (Hợp Đồng)",
+      "item": [
+        {
+          "name": "Get All Contracts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/contracts",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "contracts"]
+            }
+          }
+        },
+        {
+          "name": "Get Contract by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/contracts/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "contracts", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Contract",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"MaGiuong\": 1,\n  \"NgayBatDau\": \"2024-01-01T00:00:00\",\n  \"NgayKetThuc\": \"2024-12-31T00:00:00\",\n  \"GiaPhong\": 2000000,\n  \"TrangThai\": \"Chờ duyệt\",\n  \"GhiChu\": \"Hợp đồng năm học 2024 - Lưu ý: Hợp đồng cần được xác nhận (confirm) để có hiệu lực và gán phòng cho sinh viên\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/contracts",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "contracts"]
+            }
+          }
+        },
+        {
+          "name": "Update Contract",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"MaGiuong\": 1,\n  \"NgayBatDau\": \"2024-01-01T00:00:00\",\n  \"NgayKetThuc\": \"2025-12-31T00:00:00\",\n  \"GiaPhong\": 2200000,\n  \"TrangThai\": \"Có hiệu lực\",\n  \"GhiChu\": \"Gia hạn hợp đồng\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/contracts/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "contracts", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Contract",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/contracts/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "contracts", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Current Contract by Student",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Lấy hợp đồng hiện tại có hiệu lực của sinh viên",
+            "url": {
+              "raw": "{{gateway}}/admin/api/contracts/student/1/current",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "contracts", "student", "1", "current"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    if (jsonData.data) {",
+                  "        pm.expect(jsonData.data).to.be.an('object');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Extend Contract",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"SoThangGiaHan\": 6\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/contracts/1/extend",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "contracts", "1", "extend"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🧾 Admin - Bills (Hóa Đơn)",
+      "item": [
+        {
+          "name": "Get All Bills",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/bills?maSinhVien=1&thang=1&nam=2024&trangThai=Chưa%20thanh%20toán",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "bills"],
+              "query": [
+                { "key": "maSinhVien", "value": "1" },
+                { "key": "thang", "value": "1" },
+                { "key": "nam", "value": "2024" },
+                { "key": "trangThai", "value": "Chưa thanh toán" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Bill by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/bills/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "bills", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Bill Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Lấy chi tiết hóa đơn theo ID hóa đơn",
+            "url": {
+              "raw": "{{gateway}}/admin/api/bills/1/details",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "bills", "1", "details"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Bill",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"MaPhong\": null,\n  \"MaHopDong\": null,\n  \"Thang\": 1,\n  \"Nam\": 2024,\n  \"TongTien\": 550000,\n  \"TrangThai\": \"Chưa thanh toán\",\n  \"HanThanhToan\": \"2024-01-15T00:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/bills",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "bills"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200/201', function () {",
+                  "    pm.response.to.have.status([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Bill",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"MaPhong\": 1,\n  \"MaHopDong\": 1,\n  \"Thang\": 1,\n  \"Nam\": 2024,\n  \"TongTien\": 550000,\n  \"TrangThai\": \"Đã thanh toán\",\n  \"HanThanhToan\": \"2024-01-15T00:00:00\",\n  \"NgayThanhToan\": \"2024-01-12T00:00:00\",\n  \"GhiChu\": \"Đã thanh toán đầy đủ\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/bills/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "bills", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Bill",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/bills/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "bills", "1"]
+            }
+          }
+        },
+        {
+          "name": "Calculate Monthly Bills",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/bills/calculate-monthly?thang=1&nam=2024",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "bills", "calculate-monthly"],
+              "query": [
+                {
+                  "key": "thang",
+                  "value": "1"
+                },
+                {
+                  "key": "nam",
+                  "value": "2024"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📄 Admin - Receipts (Biên Lai)",
+      "item": [
+        {
+          "name": "Get All Receipts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/receipts?maSinhVien=1&maHoaDon=1&ngay=2024-01-10",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "receipts"],
+              "query": [
+                { "key": "maSinhVien", "value": "1" },
+                { "key": "maHoaDon", "value": "1" },
+                { "key": "ngay", "value": "2024-01-10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Receipt by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/receipts/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "receipts", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Receipt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaHoaDon\": 1,\n  \"SoTienThu\": 550000,\n  \"NgayThu\": \"2024-01-10T00:00:00\",\n  \"PhuongThucThanhToan\": \"Tiền mặt\",\n  \"NguoiThu\": \"admin\",\n  \"GhiChu\": \"Thanh toán đầy đủ\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/receipts",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "receipts"]
+            }
+          }
+        },
+        {
+          "name": "Update Receipt",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaHoaDon\": 1,\n  \"SoTienThu\": 600000,\n  \"NgayThu\": \"2024-01-10T00:00:00\",\n  \"PhuongThucThanhToan\": \"Chuyển khoản\",\n  \"NguoiThu\": \"admin\",\n  \"GhiChu\": \"Đã điều chỉnh số tiền\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/receipts/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "receipts", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Receipt",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/receipts/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "receipts", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚠️ Admin - Violations (Kỷ Luật)",
+      "item": [
+        {
+          "name": "Get All Violations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Kết quả trả về đã mở rộng cùng thông tin sinh viên/phòng: TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha và metadata.",
+            "url": {
+              "raw": "{{gateway}}/admin/api/violations?maSinhVien=1&loaiViPham=Vi%20phạm%20nội%20quy",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "violations"],
+              "query": [
+                { "key": "maSinhVien", "value": "1" },
+                { "key": "loaiViPham", "value": "Vi phạm nội quy" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Violation by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Phản hồi 1 bản ghi kỷ luật cùng thông tin hiển thị TenSinhVien, MSSV, Lop, Khoa, SoPhong, TenToaNha.",
+            "url": {
+              "raw": "{{gateway}}/admin/api/violations/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "violations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Violation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"LoaiViPham\": \"Vi phạm nội quy\",\n  \"MoTa\": \"Đi muộn sau 22h\",\n  \"NgayViPham\": \"2024-01-15T00:00:00\",\n  \"MucPhat\": 50000,\n  \"TrangThai\": \"Chưa xử lý\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/violations",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "violations"]
+            }
+          }
+        },
+        {
+          "name": "Update Violation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"LoaiViPham\": \"Vi phạm nội quy\",\n  \"MoTa\": \"Đi muộn sau 22h - Đã xử lý\",\n  \"NgayViPham\": \"2024-01-15T00:00:00\",\n  \"MucPhat\": 50000,\n  \"TrangThai\": \"Đã xử lý\",\n  \"GhiChu\": \"Đã thu tiền phạt\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/violations/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "violations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Violation",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/violations/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "violations", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Admin - Reports (Báo Cáo)",
+      "item": [
+        {
+          "name": "Occupancy Rate Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/reports/occupancy-rate?thang=1&nam=2024",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "reports", "occupancy-rate"],
+              "query": [
+                {
+                  "key": "thang",
+                  "value": "1"
+                },
+                {
+                  "key": "nam",
+                  "value": "2024"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Revenue Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/reports/revenue?thang=1&nam=2024",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "reports", "revenue"],
+              "query": [
+                {
+                  "key": "thang",
+                  "value": "1"
+                },
+                {
+                  "key": "nam",
+                  "value": "2024"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Debt Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/reports/debt",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "reports", "debt"]
+            }
+          }
+        },
+        {
+          "name": "Electricity Water Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/reports/electricity-water?thang=1&nam=2024",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "reports", "electricity-water"],
+              "query": [
+                {
+                  "key": "thang",
+                  "value": "1"
+                },
+                {
+                  "key": "nam",
+                  "value": "2024"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Violations Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/reports/violations?thang=1&nam=2024",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "reports", "violations"],
+              "query": [
+                {
+                  "key": "thang",
+                  "value": "1"
+                },
+                {
+                  "key": "nam",
+                  "value": "2024"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Generate Monthly Bills",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/bills/calculate-monthly?thang=1&nam=2024",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "bills", "calculate-monthly"],
+              "query": [
+                {
+                  "key": "thang",
+                  "value": "1"
+                },
+                {
+                  "key": "nam",
+                  "value": "2024"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Calculate Electricity Cost",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/reports/calculate-electricity?soKwh=120&thang=1&nam=2024",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "reports", "calculate-electricity"],
+              "query": [
+                {
+                  "key": "soKwh",
+                  "value": "120"
+                },
+                {
+                  "key": "thang",
+                  "value": "1"
+                },
+                {
+                  "key": "nam",
+                  "value": "2024"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Calculate Water Cost",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/reports/calculate-water?soKhoi=25&thang=1&nam=2024",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "reports", "calculate-water"],
+              "query": [
+                {
+                  "key": "soKhoi",
+                  "value": "25"
+                },
+                {
+                  "key": "thang",
+                  "value": "1"
+                },
+                {
+                  "key": "nam",
+                  "value": "2024"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⭐ Admin - Discipline Scores (Điểm Rèn Luyện)",
+      "item": [
+        {
+          "name": "Get All Discipline Scores",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/discipline-scores",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "discipline-scores"]
+            }
+          }
+        },
+        {
+          "name": "Get Discipline Score by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/discipline-scores/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "discipline-scores", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Discipline Scores by Student",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/discipline-scores/by-student/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "discipline-scores", "by-student", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Discipline Score",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"Thang\": 1,\n  \"Nam\": 2024,\n  \"DiemSo\": 85,\n  \"XepLoai\": \"Tốt\",\n  \"GhiChu\": \"Điểm rèn luyện tháng 1\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/discipline-scores",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "discipline-scores"]
+            }
+          }
+        },
+        {
+          "name": "Update Discipline Score",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"Thang\": 1,\n  \"Nam\": 2024,\n  \"DiemSo\": 90,\n  \"XepLoai\": \"Xuất sắc\",\n  \"GhiChu\": \"Đã điều chỉnh\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/discipline-scores/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "discipline-scores", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Discipline Score",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/discipline-scores/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "discipline-scores", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📝 Admin - Registrations (Đơn Đăng Ký)",
+      "item": [
+        {
+          "name": "Get All Registrations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Trả về danh sách đơn đăng ký với đầy đủ dữ liệu hiển thị (TenSinhVien, MSSV, Lop, Khoa, PhongDeXuat, ToaNhaDeXuat, metadata NgayTao/NgayCapNhat).",
+            "url": {
+              "raw": "{{gateway}}/admin/api/registrations",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "registrations"]
+            }
+          }
+        },
+        {
+          "name": "Get Registration by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Phản hồi chi tiết 1 đơn đăng ký kèm thông tin mở rộng của sinh viên và phòng đề xuất (TenSinhVien, MSSV, Lop, Khoa, PhongDeXuat, ToaNhaDeXuat).",
+            "url": {
+              "raw": "{{gateway}}/admin/api/registrations/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "registrations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Registration",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"MaPhongDeXuat\": 2,\n  \"TrangThai\": \"Đã duyệt\",\n  \"LyDo\": \"Đăng ký phòng mới\",\n  \"NgayDangKy\": \"2024-01-01T00:00:00\",\n  \"GhiChu\": \"Phê duyệt và phân phòng\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/registrations/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "registrations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"MaPhongDeXuat\": 2,\n  \"TrangThai\": \"Đang chờ\",\n  \"LyDo\": \"Đăng ký phòng mới\",\n  \"NgayDangKy\": \"2024-01-01T00:00:00\",\n  \"GhiChu\": \"Tạo mới đơn đăng ký\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/registrations",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "registrations"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200/201', function () {",
+                  "    pm.response.to.have.status([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Registration",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/registrations/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "registrations", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔄 Admin - Change Requests (Yêu Cầu Chuyển Phòng)",
+      "item": [
+        {
+          "name": "Get All Change Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/change-requests",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "change-requests"]
+            }
+          }
+        },
+        {
+          "name": "Get Change Request by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/change-requests/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "change-requests", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Change Request",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"PhongHienTai\": 1,\n  \"PhongMongMuon\": 2,\n  \"LyDo\": \"Gần thư viện hơn\",\n  \"NgayYeuCau\": \"2024-01-15T00:00:00\",\n  \"TrangThai\": \"Đã duyệt\",\n  \"GhiChu\": \"Đã chuyển phòng thành công\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/change-requests/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "change-requests", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Change Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"PhongHienTai\": 1,\n  \"PhongMongMuon\": 2,\n  \"LyDo\": \"Gần thư viện hơn\",\n  \"NgayYeuCau\": \"2024-01-10T00:00:00\",\n  \"TrangThai\": \"Đang chờ\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/change-requests",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "change-requests"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200/201', function () {",
+                  "    pm.response.to.have.status([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Change Request",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/change-requests/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "change-requests", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "💵 Admin - Price Tiers (Bậc Giá)",
+      "item": [
+        {
+          "name": "Get All Price Tiers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/price-tiers",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "price-tiers"]
+            }
+          }
+        },
+        {
+          "name": "Get Price Tier by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/price-tiers/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "price-tiers", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Price Tier",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Loai\": \"Dien\",\n  \"ThuTu\": 1,\n  \"TuSo\": 0,\n  \"DenSo\": 50,\n  \"DonGia\": 1500,\n  \"TrangThai\": true\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/price-tiers",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "price-tiers"]
+            }
+          }
+        },
+        {
+          "name": "Update Price Tier",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Loai\": \"Dien\",\n  \"ThuTu\": 1,\n  \"TuSo\": 0,\n  \"DenSo\": 50,\n  \"DonGia\": 1800,\n  \"TrangThai\": true\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/price-tiers/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "price-tiers", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Price Tier",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/price-tiers/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "price-tiers", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Price Tiers by Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Lấy danh sách bậc giá theo loại (Điện/Nước)",
+            "url": {
+              "raw": "{{gateway}}/admin/api/price-tiers/by-type/Điện",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "price-tiers", "by-type", "Điện"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success and data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📢 Admin - Overdue Notices (Thông Báo Quá Hạn)",
+      "item": [
+        {
+          "name": "Get All Overdue Notices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/overdue-notices",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "overdue-notices"]
+            }
+          }
+        },
+        {
+          "name": "Get Overdue Notice by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/overdue-notices/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "overdue-notices", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Overdue Notice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"MaHoaDon\": 1,\n  \"NgayThongBao\": \"2024-01-20T00:00:00\",\n  \"NoiDung\": \"Hóa đơn đã quá hạn thanh toán\",\n  \"TrangThai\": \"Chưa xử lý\",\n  \"GhiChu\": \"Thông báo lần 1\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/overdue-notices",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "overdue-notices"]
+            }
+          }
+        },
+        {
+          "name": "Update Overdue Notice",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaSinhVien\": 1,\n  \"MaHoaDon\": 1,\n  \"NgayThongBao\": \"2024-01-20T00:00:00\",\n  \"NoiDung\": \"Hóa đơn đã quá hạn thanh toán\",\n  \"TrangThai\": \"Đã xử lý\",\n  \"GhiChu\": \"Sinh viên đã thanh toán\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/admin/api/overdue-notices/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "overdue-notices", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Overdue Notice",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/admin/api/overdue-notices/1",
+              "host": ["{{gateway}}"],
+              "path": ["admin", "api", "overdue-notices", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 User - Profile (Thông Tin Cá Nhân)",
+      "item": [
+        {
+          "name": "Get My Current Room",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/rooms/current",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "rooms", "current"]
+            }
+          }
+        },
+        {
+          "name": "Get All Rooms",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/rooms",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "rooms"]
+            }
+          }
+        },
+        {
+          "name": "Get Room by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/rooms/1",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "rooms", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Available Rooms",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/rooms/available",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "rooms", "available"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧾 User - Bills (Hóa Đơn Cá Nhân)",
+      "item": [
+        {
+          "name": "Get My Bills",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/bills/my",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "bills", "my"]
+            }
+          }
+        },
+        {
+          "name": "Get My Bill by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/bills/my/1",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "bills", "my", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get My Bill Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Lấy chi tiết hóa đơn của tôi theo ID hóa đơn",
+            "url": {
+              "raw": "{{gateway}}/user/api/bills/my/1/details",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "bills", "my", "1", "details"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📄 User - Receipts (Biên Lai Cá Nhân)",
+      "item": [
+        {
+          "name": "Get My Receipts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/receipts/my",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "receipts", "my"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 User - Contracts (Hợp Đồng Cá Nhân)",
+      "item": [
+        {
+          "name": "Get My Contracts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/contracts/my",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "contracts", "my"]
+            }
+          }
+        },
+        {
+          "name": "Get My Current Contract",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/contracts/my/current",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "contracts", "my", "current"]
+            }
+          }
+        },
+        {
+          "name": "Confirm Contract",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/contracts/my/1/confirm",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "contracts", "my", "1", "confirm"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    if (jsonData.message) {",
+                  "        pm.expect(jsonData.message).to.be.a('string');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📝 User - Registrations (Đăng Ký)",
+      "item": [
+        {
+          "name": "Create Registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"MaPhongDeXuat\": null,\n  \"LyDo\": \"Đăng ký phòng mới\",\n  \"GhiChu\": \"Đăng ký phòng mới\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/user/api/registrations",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "registrations"]
+            }
+          }
+        },
+        {
+          "name": "Get My Registrations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Danh sách đơn đăng ký của sinh viên hiện tại, bao gồm các trường TenSinhVien, MSSV, PhongDeXuat, ToaNhaDeXuat và audit time.",
+            "url": {
+              "raw": "{{gateway}}/user/api/registrations/my-registrations",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "registrations", "my-registrations"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔄 User - Change Requests (Yêu Cầu Chuyển Phòng)",
+      "item": [
+        {
+          "name": "Create Change Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"PhongHienTai\": 1,\n  \"PhongMongMuon\": 2,\n  \"LyDo\": \"Gần thư viện hơn\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/user/api/change-requests",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "change-requests"]
+            }
+          }
+        },
+        {
+          "name": "Get My Change Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/change-requests/my-requests",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "change-requests", "my-requests"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⭐ User - Discipline Scores (Điểm Rèn Luyện)",
+      "item": [
+        {
+          "name": "Get My Discipline Scores",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/discipline-scores/my-scores",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "discipline-scores", "my-scores"]
+            }
+          }
+        },
+        {
+          "name": "Get My Discipline Score by Month",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/discipline-scores/my/1/2024",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "discipline-scores", "my", "1", "2024"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 User - Profile Management (Quản Lý Hồ Sơ)",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/students/profile",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "students", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"HoTen\": \"Nguyễn Văn A\",\n  \"NgaySinh\": \"2000-01-01\",\n  \"GioiTinh\": \"Nam\",\n  \"SDT\": \"0123456789\",\n  \"Email\": \"nguyenvana@email.com\",\n  \"DiaChi\": \"123 Đường ABC, Quận 1, TP.HCM\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/user/api/students/profile",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "students", "profile"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "    if (jsonData.message) {",
+                  "        pm.expect(jsonData.message).to.be.a('string');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"OldPassword\": \"oldpassword123\",\n  \"NewPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway}}/user/api/students/change-password",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "students", "change-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏢 User - Buildings (Tòa Nhà)",
+      "item": [
+        {
+          "name": "Get All Buildings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/buildings",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "buildings"]
+            }
+          }
+        },
+        {
+          "name": "Get Building by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/buildings/1",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "buildings", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💰 User - Fees (Mức Phí)",
+      "item": [
+        {
+          "name": "Get All Fees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/fees",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "fees"]
+            }
+          }
+        },
+        {
+          "name": "Get Fee by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/fees/1",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "fees", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Fees by Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/fees/by-type/Dien",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "fees", "by-type", "Dien"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚠️ User - Violations (Kỷ Luật Cá Nhân)",
+      "item": [
+        {
+          "name": "Get My Violations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "description": "Danh sách kỷ luật của sinh viên hiện tại, bao gồm TenSinhVien, MSSV, SoPhong, TenToaNha, trạng thái/phạt và thời gian tạo.",
+            "url": {
+              "raw": "{{gateway}}/user/api/violations/my-violations",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "violations", "my-violations"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Admin - Fee Configs (Cấu Hình Phí)",
+      "item": [
+        {
+          "name": "Get All Fee Configs",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{gateway}}/admin/api/fee-configs", "host": ["{{gateway}}"], "path": ["admin","api","fee-configs"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success and data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Fee Config by ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{gateway}}/admin/api/fee-configs/1", "host": ["{{gateway}}"], "path": ["admin","api","fee-configs","1"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Fee Configs by Type",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{gateway}}/admin/api/fee-configs/by-type/Dien", "host": ["{{gateway}}"], "path": ["admin","api","fee-configs","by-type","Dien"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success and data', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Fee Config",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"Loai\": \"Dien\",\n  \"HeSo\": 1.2,\n  \"TuNgay\": \"2024-01-01\",\n  \"DenNgay\": null,\n  \"TrangThai\": true,\n  \"GhiChu\": \"Áp dụng năm 2024\"\n}" },
+            "url": { "raw": "{{gateway}}/admin/api/fee-configs", "host": ["{{gateway}}"], "path": ["admin","api","fee-configs"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200/201', function () {",
+                  "    pm.response.to.have.status([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Fee Config",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"Loai\": \"Dien\",\n  \"HeSo\": 1.3,\n  \"TuNgay\": \"2024-01-01\",\n  \"DenNgay\": null,\n  \"TrangThai\": true,\n  \"GhiChu\": \"Cập nhật hệ số\"\n}" },
+            "url": { "raw": "{{gateway}}/admin/api/fee-configs/1", "host": ["{{gateway}}"], "path": ["admin","api","fee-configs","1"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Fee Config",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": { "raw": "{{gateway}}/admin/api/fee-configs/1", "host": ["{{gateway}}"], "path": ["admin","api","fee-configs","1"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔔 User - Notifications (Thông Báo)",
+      "item": [
+        {
+          "name": "Get My Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/notifications/my",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "notifications", "my"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Notification by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/notifications/my/1",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "notifications", "my", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('object');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏠 User - Home",
+      "item": [
+        {
+          "name": "Get Home Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{gateway}}/user/api/home",
+              "host": ["{{gateway}}"],
+              "path": ["user", "api", "home"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response format is correct', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "gateway",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "admin",
+      "value": "http://localhost:8001"
+    },
+    {
+      "key": "user",
+      "value": "http://localhost:8002"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}
+
+
