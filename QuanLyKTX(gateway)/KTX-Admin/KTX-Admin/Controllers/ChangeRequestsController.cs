@@ -126,13 +126,33 @@ namespace KTX_Admin.Controllers
             {
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
+
+                // Lấy giá trị hiện tại nếu không có trong body
+                int maSV = model.MaSinhVien > 0 ? model.MaSinhVien : 0;
+                int phongHT = model.PhongHienTai > 0 ? model.PhongHienTai : 0;
+                DateTime ngayYeuCau = model.NgayYeuCau;
+                if (maSV == 0 || phongHT == 0 || ngayYeuCau == default)
+                {
+                    using var getCmd = new SqlCommand("sp_YeuCauChuyenPhong_GetById", connection) { CommandType = CommandType.StoredProcedure };
+                    getCmd.Parameters.AddWithValue("@MaYeuCau", id);
+                    using var rdr = await getCmd.ExecuteReaderAsync();
+                    if (await rdr.ReadAsync())
+                    {
+                        if (maSV == 0) maSV = rdr.GetInt32(rdr.GetOrdinal("MaSinhVien"));
+                        if (phongHT == 0) phongHT = rdr.GetInt32(rdr.GetOrdinal("PhongHienTai"));
+                        if (ngayYeuCau == default) ngayYeuCau = rdr.GetDateTime(rdr.GetOrdinal("NgayYeuCau"));
+                    }
+                    rdr.Close();
+                    if (maSV == 0) return BadRequest(new { success = false, message = "Không tìm thấy yêu cầu chuyển phòng" });
+                }
+
                 using var command = new SqlCommand("sp_YeuCauChuyenPhong_Update", connection) { CommandType = CommandType.StoredProcedure };
                 command.Parameters.AddWithValue("@MaYeuCau", id);
-                command.Parameters.AddWithValue("@MaSinhVien", model.MaSinhVien);
-                command.Parameters.AddWithValue("@PhongHienTai", model.PhongHienTai);
+                command.Parameters.AddWithValue("@MaSinhVien", maSV);
+                command.Parameters.AddWithValue("@PhongHienTai", phongHT);
                 command.Parameters.AddWithValue("@PhongMongMuon", (object?)model.PhongMongMuon ?? DBNull.Value);
-                command.Parameters.AddWithValue("@LyDo", model.LyDo);
-                command.Parameters.AddWithValue("@NgayYeuCau", model.NgayYeuCau);
+                command.Parameters.AddWithValue("@LyDo", (object?)model.LyDo ?? DBNull.Value);
+                command.Parameters.AddWithValue("@NgayYeuCau", ngayYeuCau);
                 command.Parameters.AddWithValue("@TrangThai", model.TrangThai);
                 command.Parameters.AddWithValue("@GhiChu", (object?)model.GhiChu ?? DBNull.Value);
                 var rows = await command.ExecuteNonQueryAsync();

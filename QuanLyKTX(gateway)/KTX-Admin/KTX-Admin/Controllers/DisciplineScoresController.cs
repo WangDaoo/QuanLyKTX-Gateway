@@ -186,14 +186,35 @@ namespace KTX_Admin.Controllers
 				using var connection = new SqlConnection(_connectionString);
 				await connection.OpenAsync();
 
+				// Lấy giá trị hiện tại nếu không có trong body
+				int maSV = model.MaSinhVien > 0 ? model.MaSinhVien : 0;
+				int thang = model.Thang > 0 ? model.Thang : 0;
+				int nam = model.Nam > 0 ? model.Nam : 0;
+
+				if (maSV == 0 || thang == 0 || nam == 0)
+				{
+					using var getCmd = new SqlCommand("sp_DiemRenLuyen_GetById", connection) { CommandType = CommandType.StoredProcedure };
+					getCmd.Parameters.AddWithValue("@MaDiem", id);
+					using var rdr = await getCmd.ExecuteReaderAsync();
+					if (await rdr.ReadAsync())
+					{
+						if (maSV == 0) maSV = rdr.GetInt32(rdr.GetOrdinal("MaSinhVien"));
+						if (thang == 0) thang = rdr.GetInt32(rdr.GetOrdinal("Thang"));
+						if (nam == 0) nam = rdr.GetInt32(rdr.GetOrdinal("Nam"));
+					}
+					rdr.Close();
+					if (maSV == 0 || thang == 0 || nam == 0)
+						return BadRequest(new { success = false, message = "Không tìm thấy điểm rèn luyện" });
+				}
+
 				using var command = new SqlCommand("sp_DiemRenLuyen_Update", connection)
 				{
 					CommandType = CommandType.StoredProcedure
 				};
 				command.Parameters.AddWithValue("@MaDiem", id);
-				command.Parameters.AddWithValue("@MaSinhVien", model.MaSinhVien);
-				command.Parameters.AddWithValue("@Thang", model.Thang);
-				command.Parameters.AddWithValue("@Nam", model.Nam);
+				command.Parameters.AddWithValue("@MaSinhVien", maSV);
+				command.Parameters.AddWithValue("@Thang", thang);
+				command.Parameters.AddWithValue("@Nam", nam);
 				command.Parameters.AddWithValue("@DiemSo", model.DiemSo);
 				command.Parameters.AddWithValue("@XepLoai", model.XepLoai ?? "Không xếp loại");
 				command.Parameters.AddWithValue("@GhiChu", (object?)model.GhiChu ?? DBNull.Value);

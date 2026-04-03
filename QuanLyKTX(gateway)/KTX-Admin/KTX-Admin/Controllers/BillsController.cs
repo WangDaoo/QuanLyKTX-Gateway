@@ -163,16 +163,38 @@ namespace KTX_Admin.Controllers
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
 
+                // Lấy giá trị hiện tại nếu không có trong body
+                int? maSV = model.MaSinhVien;
+                int? maPhong = model.MaPhong;
+                int? maHD = model.MaHopDong;
+                int thang = model.Thang;
+                int nam = model.Nam;
+                if (!maSV.HasValue || thang == 0 || nam == 0)
+                {
+                    using var getCmd = new SqlCommand("sp_HoaDon_GetById", connection) { CommandType = CommandType.StoredProcedure };
+                    getCmd.Parameters.AddWithValue("@MaHoaDon", id);
+                    using var rdr = await getCmd.ExecuteReaderAsync();
+                    if (await rdr.ReadAsync())
+                    {
+                        if (!maSV.HasValue) maSV = rdr.IsDBNull(rdr.GetOrdinal("MaSinhVien")) ? (int?)null : rdr.GetInt32(rdr.GetOrdinal("MaSinhVien"));
+                        if (!maPhong.HasValue) maPhong = rdr.IsDBNull(rdr.GetOrdinal("MaPhong")) ? (int?)null : rdr.GetInt32(rdr.GetOrdinal("MaPhong"));
+                        if (!maHD.HasValue) maHD = rdr.IsDBNull(rdr.GetOrdinal("MaHopDong")) ? (int?)null : rdr.GetInt32(rdr.GetOrdinal("MaHopDong"));
+                        if (thang == 0) thang = rdr.GetInt32(rdr.GetOrdinal("Thang"));
+                        if (nam == 0) nam = rdr.GetInt32(rdr.GetOrdinal("Nam"));
+                    }
+                    rdr.Close();
+                }
+
                 using var command = new SqlCommand("sp_HoaDon_Update", connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
                 command.Parameters.AddWithValue("@MaHoaDon", id);
-                command.Parameters.AddWithValue("@MaSinhVien", (object?)model.MaSinhVien ?? DBNull.Value);
-                command.Parameters.AddWithValue("@MaPhong", (object?)model.MaPhong ?? DBNull.Value);
-                command.Parameters.AddWithValue("@MaHopDong", (object?)model.MaHopDong ?? DBNull.Value);
-                command.Parameters.AddWithValue("@Thang", model.Thang);
-                command.Parameters.AddWithValue("@Nam", model.Nam);
+                command.Parameters.AddWithValue("@MaSinhVien", (object?)maSV ?? DBNull.Value);
+                command.Parameters.AddWithValue("@MaPhong", (object?)maPhong ?? DBNull.Value);
+                command.Parameters.AddWithValue("@MaHopDong", (object?)maHD ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Thang", thang);
+                command.Parameters.AddWithValue("@Nam", nam);
                 command.Parameters.AddWithValue("@TongTien", model.TongTien);
                 command.Parameters.AddWithValue("@TrangThai", model.TrangThai);
                 command.Parameters.AddWithValue("@HanThanhToan", (object?)model.HanThanhToan ?? DBNull.Value);
@@ -373,6 +395,7 @@ namespace KTX_Admin.Controllers
                     CommandType = CommandType.StoredProcedure
                 };
                 command.Parameters.AddWithValue("@MaChiTiet", detailId);
+                command.Parameters.AddWithValue("@MaHoaDon", id);  // BUG FIX: missing @MaHoaDon parameter
                 command.Parameters.AddWithValue("@LoaiChiPhi", model.LoaiChiPhi);
                 command.Parameters.AddWithValue("@SoLuong", model.SoLuong);
                 command.Parameters.AddWithValue("@DonGia", model.DonGia);

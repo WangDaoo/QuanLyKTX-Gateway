@@ -126,13 +126,37 @@ namespace KTX_Admin.Controllers
             {
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
+
+                // Lấy giá trị hiện tại nếu không có trong body
+                int maSV = model.MaSinhVien > 0 ? model.MaSinhVien : 0;
+                int maGiuong = model.MaGiuong > 0 ? model.MaGiuong : 0;
+                DateTime ngayBD = model.NgayBatDau;
+                DateTime ngayKT = model.NgayKetThuc;
+                decimal giaPhong = model.GiaPhong;
+                if (maSV == 0 || maGiuong == 0 || ngayBD == default || ngayKT == default || giaPhong == 0)
+                {
+                    using var getCmd = new SqlCommand("sp_HopDong_GetById", connection) { CommandType = CommandType.StoredProcedure };
+                    getCmd.Parameters.AddWithValue("@MaHopDong", id);
+                    using var rdr = await getCmd.ExecuteReaderAsync();
+                    if (await rdr.ReadAsync())
+                    {
+                        if (maSV == 0) maSV = rdr.GetInt32(rdr.GetOrdinal("MaSinhVien"));
+                        if (maGiuong == 0) maGiuong = rdr.GetInt32(rdr.GetOrdinal("MaGiuong"));
+                        if (ngayBD == default) ngayBD = rdr.GetDateTime(rdr.GetOrdinal("NgayBatDau"));
+                        if (ngayKT == default) ngayKT = rdr.GetDateTime(rdr.GetOrdinal("NgayKetThuc"));
+                        if (giaPhong == 0) giaPhong = rdr.GetDecimal(rdr.GetOrdinal("GiaPhong"));
+                    }
+                    rdr.Close();
+                    if (maSV == 0) return BadRequest(new { success = false, message = "Không tìm thấy hợp đồng" });
+                }
+
                 using var command = new SqlCommand("sp_HopDong_Update", connection) { CommandType = CommandType.StoredProcedure };
                 command.Parameters.AddWithValue("@MaHopDong", id);
-                command.Parameters.AddWithValue("@MaSinhVien", model.MaSinhVien);
-                command.Parameters.AddWithValue("@MaGiuong", model.MaGiuong);
-                command.Parameters.AddWithValue("@NgayBatDau", model.NgayBatDau);
-                command.Parameters.AddWithValue("@NgayKetThuc", model.NgayKetThuc);
-                command.Parameters.AddWithValue("@GiaPhong", model.GiaPhong);
+                command.Parameters.AddWithValue("@MaSinhVien", maSV);
+                command.Parameters.AddWithValue("@MaGiuong", maGiuong);
+                command.Parameters.AddWithValue("@NgayBatDau", ngayBD);
+                command.Parameters.AddWithValue("@NgayKetThuc", ngayKT);
+                command.Parameters.AddWithValue("@GiaPhong", giaPhong);
                 command.Parameters.AddWithValue("@TrangThai", model.TrangThai);
                 command.Parameters.AddWithValue("@GhiChu", (object?)model.GhiChu ?? DBNull.Value);
                 command.Parameters.AddWithValue("@NguoiCapNhat", (object?)model.NguoiCapNhat ?? DBNull.Value);

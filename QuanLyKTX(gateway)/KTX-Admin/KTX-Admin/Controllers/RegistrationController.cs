@@ -134,13 +134,31 @@ namespace KTX_Admin.Controllers
             {
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
+
+                // Lấy giá trị hiện tại nếu không có trong body (chỉ update trạng thái)
+                int maSV = model.MaSinhVien > 0 ? model.MaSinhVien : 0;
+                DateTime ngayDangKy = model.NgayDangKy;
+                if (maSV == 0 || ngayDangKy == default)
+                {
+                    using var getCmd = new SqlCommand("sp_DonDangKy_GetById", connection) { CommandType = CommandType.StoredProcedure };
+                    getCmd.Parameters.AddWithValue("@MaDon", id);
+                    using var rdr = await getCmd.ExecuteReaderAsync();
+                    if (await rdr.ReadAsync())
+                    {
+                        if (maSV == 0) maSV = rdr.GetInt32(rdr.GetOrdinal("MaSinhVien"));
+                        if (ngayDangKy == default) ngayDangKy = rdr.GetDateTime(rdr.GetOrdinal("NgayDangKy"));
+                    }
+                    rdr.Close();
+                    if (maSV == 0) return BadRequest(new { success = false, message = "Không tìm thấy đơn đăng ký" });
+                }
+
                 using var command = new SqlCommand("sp_DonDangKy_Update", connection) { CommandType = CommandType.StoredProcedure };
                 command.Parameters.AddWithValue("@MaDon", id);
-                command.Parameters.AddWithValue("@MaSinhVien", model.MaSinhVien);
+                command.Parameters.AddWithValue("@MaSinhVien", maSV);
                 command.Parameters.AddWithValue("@MaPhongDeXuat", (object?)model.MaPhongDeXuat ?? DBNull.Value);
                 command.Parameters.AddWithValue("@TrangThai", model.TrangThai);
                 command.Parameters.AddWithValue("@LyDo", (object?)model.LyDo ?? DBNull.Value);
-                command.Parameters.AddWithValue("@NgayDangKy", model.NgayDangKy);
+                command.Parameters.AddWithValue("@NgayDangKy", ngayDangKy);
                 command.Parameters.AddWithValue("@GhiChu", (object?)model.GhiChu ?? DBNull.Value);
                 command.Parameters.AddWithValue("@NguoiCapNhat", (object?)model.NguoiCapNhat ?? DBNull.Value);
                 var rows = await command.ExecuteNonQueryAsync();

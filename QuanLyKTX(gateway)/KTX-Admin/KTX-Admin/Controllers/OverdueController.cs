@@ -142,15 +142,37 @@ namespace KTX_Admin.Controllers
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
 
+                // Lấy giá trị hiện tại nếu không có trong body
+                int maSV = model.MaSinhVien > 0 ? model.MaSinhVien : 0;
+                int? maHD = model.MaHoaDon;
+                DateTime ngayTB = model.NgayThongBao;
+                string noiDung = model.NoiDung;
+                if (maSV == 0 || string.IsNullOrEmpty(noiDung) || ngayTB == default)
+                {
+                    using var getCmd = new SqlCommand("sp_ThongBaoQuaHan_GetById", connection) { CommandType = CommandType.StoredProcedure };
+                    getCmd.Parameters.AddWithValue("@MaThongBao", id);
+                    using var rdr = await getCmd.ExecuteReaderAsync();
+                    if (await rdr.ReadAsync())
+                    {
+                        if (maSV == 0) maSV = rdr.GetInt32(rdr.GetOrdinal("MaSinhVien"));
+                        if (!maHD.HasValue || maHD.Value == 0)
+                            maHD = rdr.IsDBNull(rdr.GetOrdinal("MaHoaDon")) ? null : rdr.GetInt32(rdr.GetOrdinal("MaHoaDon"));
+                        if (ngayTB == default) ngayTB = rdr.GetDateTime(rdr.GetOrdinal("NgayThongBao"));
+                        if (string.IsNullOrEmpty(noiDung)) noiDung = rdr.GetString(rdr.GetOrdinal("NoiDung"));
+                    }
+                    rdr.Close();
+                    if (maSV == 0) return BadRequest(new { success = false, message = "Không tìm thấy thông báo" });
+                }
+
                 using var command = new SqlCommand("sp_ThongBaoQuaHan_Update", connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
                 command.Parameters.AddWithValue("@MaThongBao", id);
-                command.Parameters.AddWithValue("@MaSinhVien", model.MaSinhVien);
-                command.Parameters.AddWithValue("@MaHoaDon", model.MaHoaDon.HasValue && model.MaHoaDon.Value > 0 ? (object)model.MaHoaDon.Value : DBNull.Value);
-                command.Parameters.AddWithValue("@NgayThongBao", model.NgayThongBao);
-                command.Parameters.AddWithValue("@NoiDung", model.NoiDung);
+                command.Parameters.AddWithValue("@MaSinhVien", maSV);
+                command.Parameters.AddWithValue("@MaHoaDon", maHD.HasValue && maHD.Value > 0 ? (object)maHD.Value : DBNull.Value);
+                command.Parameters.AddWithValue("@NgayThongBao", ngayTB);
+                command.Parameters.AddWithValue("@NoiDung", noiDung);
                 command.Parameters.AddWithValue("@TrangThai", model.TrangThai);
                 command.Parameters.AddWithValue("@GhiChu", (object?)model.GhiChu ?? DBNull.Value);
 

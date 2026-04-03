@@ -147,16 +147,39 @@ namespace KTX_Admin.Controllers
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
 
+                // Lấy giá trị hiện tại nếu không có trong body
+                int maToa = model.MaToaNha > 0 ? model.MaToaNha : 0;
+                string soPhong = model.SoPhong;
+                int soGiuong = model.SoGiuong;
+                string loaiPhong = model.LoaiPhong;
+                decimal giaPhong = model.GiaPhong;
+                if (maToa == 0 || string.IsNullOrEmpty(soPhong))
+                {
+                    using var getCmd = new SqlCommand("sp_Phong_GetById", connection) { CommandType = CommandType.StoredProcedure };
+                    getCmd.Parameters.AddWithValue("@MaPhong", id);
+                    using var rdr = await getCmd.ExecuteReaderAsync();
+                    if (await rdr.ReadAsync())
+                    {
+                        if (maToa == 0) maToa = rdr.GetInt32(rdr.GetOrdinal("MaToaNha"));
+                        if (string.IsNullOrEmpty(soPhong)) soPhong = rdr.GetString(rdr.GetOrdinal("SoPhong"));
+                        if (soGiuong == 0) soGiuong = rdr.GetInt32(rdr.GetOrdinal("SoGiuong"));
+                        if (string.IsNullOrEmpty(loaiPhong)) loaiPhong = rdr.GetString(rdr.GetOrdinal("LoaiPhong"));
+                        if (giaPhong == 0) giaPhong = rdr.GetDecimal(rdr.GetOrdinal("GiaPhong"));
+                    }
+                    rdr.Close();
+                    if (maToa == 0) return BadRequest(new { success = false, message = "Không tìm thấy phòng" });
+                }
+
                 using var command = new SqlCommand("sp_Phong_Update", connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
                 command.Parameters.AddWithValue("@MaPhong", id);
-                command.Parameters.AddWithValue("@MaToaNha", model.MaToaNha);
-                command.Parameters.AddWithValue("@SoPhong", model.SoPhong);
-                command.Parameters.AddWithValue("@SoGiuong", model.SoGiuong);
-                command.Parameters.AddWithValue("@LoaiPhong", model.LoaiPhong);
-                command.Parameters.AddWithValue("@GiaPhong", model.GiaPhong);
+                command.Parameters.AddWithValue("@MaToaNha", maToa);
+                command.Parameters.AddWithValue("@SoPhong", soPhong);
+                command.Parameters.AddWithValue("@SoGiuong", soGiuong);
+                command.Parameters.AddWithValue("@LoaiPhong", loaiPhong);
+                command.Parameters.AddWithValue("@GiaPhong", giaPhong);
                 command.Parameters.AddWithValue("@MoTa", (object?)model.MoTa ?? DBNull.Value);
                 command.Parameters.AddWithValue("@TrangThai", model.TrangThai);
                 command.Parameters.AddWithValue("@NguoiCapNhat", (object?)model.NguoiCapNhat ?? DBNull.Value);

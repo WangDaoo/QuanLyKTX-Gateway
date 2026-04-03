@@ -144,9 +144,23 @@ namespace KTX_Admin.Controllers
             {
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
+
+                // Lấy MaSinhVien hiện tại nếu không có trong body (chỉ update trạng thái)
+                int maSinhVien = model.MaSinhVien > 0 ? model.MaSinhVien : 0;
+                if (maSinhVien == 0)
+                {
+                    using var getCmd = new SqlCommand("sp_KyLuat_GetById", connection) { CommandType = CommandType.StoredProcedure };
+                    getCmd.Parameters.AddWithValue("@MaKyLuat", id);
+                    using var rdr = await getCmd.ExecuteReaderAsync();
+                    if (await rdr.ReadAsync())
+                        maSinhVien = rdr.GetInt32(rdr.GetOrdinal("MaSinhVien"));
+                    rdr.Close();
+                    if (maSinhVien == 0) return BadRequest(new { success = false, message = "Không tìm thấy kỷ luật" });
+                }
+
                 using var command = new SqlCommand("sp_KyLuat_Update", connection) { CommandType = CommandType.StoredProcedure };
                 command.Parameters.AddWithValue("@MaKyLuat", id);
-                command.Parameters.AddWithValue("@MaSinhVien", model.MaSinhVien);
+                command.Parameters.AddWithValue("@MaSinhVien", maSinhVien);
                 command.Parameters.AddWithValue("@LoaiViPham", model.LoaiViPham);
                 command.Parameters.AddWithValue("@MoTa", model.MoTa);
                 command.Parameters.AddWithValue("@NgayViPham", model.NgayViPham);

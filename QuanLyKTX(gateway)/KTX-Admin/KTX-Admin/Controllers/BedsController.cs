@@ -136,12 +136,25 @@ namespace KTX_Admin.Controllers
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
 
+                // Lấy giá trị hiện tại nếu không có trong body
+                int maPhong = model.MaPhong > 0 ? model.MaPhong : 0;
+                if (maPhong == 0)
+                {
+                    using var getCmd = new SqlCommand("sp_Giuong_GetById", connection) { CommandType = CommandType.StoredProcedure };
+                    getCmd.Parameters.AddWithValue("@MaGiuong", id);
+                    using var rdr = await getCmd.ExecuteReaderAsync();
+                    if (await rdr.ReadAsync())
+                        maPhong = rdr.GetInt32(rdr.GetOrdinal("MaPhong"));
+                    rdr.Close();
+                    if (maPhong == 0) return BadRequest(new { success = false, message = "Không tìm thấy giường" });
+                }
+
                 using var command = new SqlCommand("sp_Giuong_Update", connection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
                 command.Parameters.AddWithValue("@MaGiuong", id);
-                command.Parameters.AddWithValue("@MaPhong", model.MaPhong);
+                command.Parameters.AddWithValue("@MaPhong", maPhong);
                 command.Parameters.AddWithValue("@SoGiuong", model.SoGiuong);
                 command.Parameters.AddWithValue("@TrangThai", model.TrangThai);
                 command.Parameters.AddWithValue("@MoTa", (object?)model.MoTa ?? DBNull.Value);
